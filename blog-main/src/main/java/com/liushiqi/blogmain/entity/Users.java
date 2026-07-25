@@ -1,0 +1,44 @@
+package com.liushiqi.blogmain.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+/**
+ * users
+ */
+@Data
+//@AllArgsConstructor
+//@NoArgsConstructor
+public class Users {
+    /**
+     * 创建时间，用户账号创建的时间戳
+     */
+    private LocalDateTime createTime;
+    /**
+     * 电子邮箱，用户的联系邮箱地址
+     */
+    private String email;
+    /**
+     * 用户ID，主键，唯一标识用户的数字ID
+     */
+    private Long id;
+    /**
+     * 密码，使用BCrypt算法加密的用户密码
+     */
+    private String password;
+    /**
+     * 角色，ADMIN 或 USER
+     */
+    private String role;
+    /**
+     * 更新时间，用户账号最后更新的时间戳
+     */
+    private LocalDateTime updateTime;
+    /**
+     * 用户名，用户登录名，长度不超过20个字符
+     */
+    private String username;
+}

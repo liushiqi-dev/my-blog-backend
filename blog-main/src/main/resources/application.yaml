@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: blog-main
+  profiles:
+    active: dev
+
+mybatis:
+  configuration:
+    #开启驼峰命名法
+    map-underscore-to-camel-case: true
+    #输出日志至控制台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  servlet:
+    context-path: /api

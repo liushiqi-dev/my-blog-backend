@@ -1,0 +1,9 @@
+# 开发环境配置示例
+# 复制此文件为 application-dev.yaml 并填写真实配置
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog
+    username: your_username
+    password: your_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
