@@ -15,6 +15,18 @@ public class UserServiceimpl implements UserService {
     @Override
     public Users login(Users users) {
         // 调用Mapper层方法
-        return userMapper.login(users);
+        return userMapper.getByUsernameAndPassword(users);
     }
+
+    @Override
+    public Users register(Users user) {
+        // 先检查用户名是否存在
+        if (userMapper.existsByUsername(user.getUsername())) {
+            return null;
+        }
+        // 执行注册
+        userMapper.insert(user);
+        return user;  // 返回包含自增ID的用户对象
+    }
+
 }
