@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface UserMapper {
 
-    // 登录
-    @Select("select id,username from users where username=#{username} and password=#{password}")
-    Users getByUsernameAndPassword(Users users);
+    // 根据用户名查询用户（用于登录验证）
+    @Select("select username, password from users where username=#{username}")
+    Users findByUsername(String username);
 
     // 注册
     @Select("select count(*) > 0 from users where username=#{username}")

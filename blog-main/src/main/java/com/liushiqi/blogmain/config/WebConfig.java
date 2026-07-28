@@ -1,10 +1,7 @@
 package com.liushiqi.blogmain.config;
 
-import com.liushiqi.blogmain.interceptor.LoginInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -17,20 +14,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("http://localhost:8080")
                 .allowedMethods("GET","POST","PUT","DELETE")
                 .allowedHeaders("*");
-    }
-
-    @Autowired
-    private LoginInterceptor loginInterceptor;
-
-    // 配置拦截器
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor)
-                // 拦截所有请求
-                .addPathPatterns("/**")
-                // 排除登录接口
-                .excludePathPatterns("/users/login",
-                // 排除注册接口
-                "/users/register");
     }
 }
