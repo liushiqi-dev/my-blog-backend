@@ -5,10 +5,7 @@ import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
 import com.liushiqi.blogmain.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -54,5 +51,13 @@ public class UserController {
         // 注册成功后生成JWT token，直接登录
         String jwtToken = JwtUtils.generateJWTToken(registeredUser);
         return Result.success(jwtToken);
+    }
+
+    //获取用户信息
+    @GetMapping("/me")
+    public Result getUserInfo(){
+        // 从 中获取当前登录用户
+        Users userInfo = userService.getUserInfo();
+        return Result.success(userInfo);
     }
 }

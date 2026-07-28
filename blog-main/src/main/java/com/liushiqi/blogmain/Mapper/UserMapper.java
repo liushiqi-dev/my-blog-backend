@@ -14,8 +14,9 @@ public interface UserMapper {
     // 注册
     @Select("select count(*) > 0 from users where username=#{username}")
     boolean existsByUsername(String username);
-
     void insert(Users user);
 
-
+    // 根据id查询用户（用于获取用户信息）
+    @Select("select id, username, role, email from users where id=#{id}")
+    Users findById(Long id);
 }

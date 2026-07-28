@@ -8,13 +8,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JWT 认证过滤器
@@ -38,22 +40,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = JwtUtils.parseJWTToken(token);
                 Long userId = claims.get("userId", Long.class);
                 String username = claims.get("username", String.class);
+                String role = claims.get("role", String.class);
 
-                if (userId != null && username != null) {
+                if (userId != null && username != null && role != null) {
+                    // 创建权限列表
+                    List<GrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority(role));
+
                     // 创建认证对象
                     UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
                     // 存入 SecurityContext
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+
             } catch (Exception e) {
                 logger.error("JWT token 验证失败", e);
             }
         }
 
+        // 放行
         filterChain.doFilter(request, response);
     }
 }

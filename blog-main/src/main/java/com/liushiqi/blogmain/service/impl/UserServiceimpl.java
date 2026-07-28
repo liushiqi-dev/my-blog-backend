@@ -4,8 +4,11 @@ import com.liushiqi.blogmain.Mapper.UserMapper;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class UserServiceimpl implements UserService {
@@ -45,10 +48,19 @@ public class UserServiceimpl implements UserService {
         // 加密密码
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
+        user.setRole("USER");  // 默认角色为 USER
 
         // 执行注册
         userMapper.insert(user);
         return user;  // 返回包含自增ID的用户对象
     }
 
+    // 获取用户信息
+    @Override
+    public Users getUserInfo() {
+        // 从 SecurityContext 中获取当前登录用户ID
+        Long userId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        // 根据ID查询用户信息
+        return userMapper.findById(userId);
+    }
 }
