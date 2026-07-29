@@ -1,9 +1,12 @@
 package com.liushiqi.blogmain.controller;
 
+import com.liushiqi.blogmain.common.BusinessException;
 import com.liushiqi.blogmain.common.Result;
+import com.liushiqi.blogmain.dto.TokenResponse;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
 import com.liushiqi.blogmain.util.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,49 +17,42 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    /**
+     * &#064;Valid  注解作用：
+     * 1. 自动校验 @RequestBody 传入的参数是否符合实体类中定义的校验规则（如 @NotNull、@NotBlank 等）
+     * 2. 校验失败会自动抛出 MethodArgumentNotValidException 异常
+     * 3. 避免手写大量 if-else 校验逻辑，代码更简洁
+     */
     @PostMapping("login")
-    public Result login(@RequestBody Users user){
-        // 参数验证: 对于绕过前端的异常请求,统一返回模糊错误信息
-        if(user.getUsername()==null||user.getUsername().trim().isEmpty()||
-           user.getPassword()==null||user.getPassword().trim().isEmpty()||
-           user.getUsername().length()<3||user.getUsername().length()>20||
-           user.getPassword().length()<6||user.getPassword().length()>32){
-            return Result.error("用户名或密码错误");
+    public Result login(@Valid @RequestBody Users user){
+        // 参数验证失败会自动抛出异常，由GlobalExceptionHandler处理
+        
+        // 调用服务层方法
+        Users loggedInUser = userService.login(user);
+        if(loggedInUser == null) {
+            throw new BusinessException("用户名或密码错误");
         }
 
-        // 调用服务层方法
-        Users loggedInUser=userService.login(user);
-        if(loggedInUser==null)
-            return Result.error("用户名或密码错误");
-
         //生成JWT token
-        String jwtToken= JwtUtils.generateJWTToken(loggedInUser);
-        return Result.success(jwtToken);
+        String jwtToken = JwtUtils.generateJWTToken(loggedInUser);
+        return Result.success(new TokenResponse(jwtToken));
     }
 
     @PostMapping("register")
-    public Result register(@RequestBody Users user){
-        //参数校验
-        if(user.getUsername()==null||user.getUsername().trim().isEmpty()||
-           user.getPassword()==null||user.getPassword().trim().isEmpty()||
-           user.getUsername().length()<3||user.getUsername().length()>20||
-           user.getPassword().length()<6||user.getPassword().length()>32){
-            return Result.error("用户名或密码格式错误");
-        }
+    public Result register(@Valid @RequestBody Users user){
+        // 参数验证失败会自动抛出异常，由GlobalExceptionHandler处理
 
         Users registeredUser = userService.register(user);
-        if (registeredUser == null) {
-            return Result.error("用户名已被占用");
-        }
         // 注册成功后生成JWT token，直接登录
         String jwtToken = JwtUtils.generateJWTToken(registeredUser);
-        return Result.success(jwtToken);
+        return Result.success(new TokenResponse(jwtToken));
     }
 
     //获取用户信息
     @GetMapping("/me")
     public Result getUserInfo(){
-        // 从 中获取当前登录用户
+        // 从SecurityContext中获取当前登录用户
         Users userInfo = userService.getUserInfo();
         return Result.success(userInfo);
     }

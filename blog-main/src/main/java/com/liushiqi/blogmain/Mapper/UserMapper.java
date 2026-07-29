@@ -11,9 +11,14 @@ public interface UserMapper {
     @Select("select username, password from users where username=#{username}")
     Users findByUsername(String username);
 
-    // 注册
+    // 检查用户名是否存在
     @Select("select count(*) > 0 from users where username=#{username}")
     boolean existsByUsername(String username);
+
+    // 检查邮箱是否存在
+    @Select("select count(*) > 0 from users where email=#{email}")
+    boolean existsByEmail(String email);
+
     void insert(Users user);
 
     // 根据id查询用户（用于获取用户信息）

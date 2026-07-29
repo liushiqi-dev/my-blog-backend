@@ -3,6 +3,7 @@ package com.liushiqi.blogmain.service.impl;
 import com.liushiqi.blogmain.Mapper.UserMapper;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
+import com.liushiqi.blogmain.common.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,9 +41,14 @@ public class UserServiceimpl implements UserService {
     // 注册
     @Override
     public Users register(Users user) {
-        // 先检查用户名是否存在
+        // 检查用户名是否存在
         if (userMapper.existsByUsername(user.getUsername())) {
-            return null;
+            throw new BusinessException("用户名已被占用");
+        }
+
+        // 检查邮箱是否存在
+        if (user.getEmail() != null && userMapper.existsByEmail(user.getEmail())) {
+            throw new BusinessException("邮箱已被注册");
         }
 
         // 加密密码
