@@ -1,4 +1,4 @@
-package com.liushiqi.blogmain.common;
+package com.liushiqi.blogmain.common.exception;
 
 /**
  * 业务异常

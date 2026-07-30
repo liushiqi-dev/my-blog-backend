@@ -1,6 +1,6 @@
 package com.liushiqi.blogmain.config;
 
-import com.liushiqi.blogmain.security.JwtAuthenticationFilter;
+import com.liushiqi.blogmain.security.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,5 +1,6 @@
-package com.liushiqi.blogmain.common;
+package com.liushiqi.blogmain.common.exception;
 
+import com.liushiqi.blogmain.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -1,4 +1,4 @@
-package com.liushiqi.blogmain.common;
+package com.liushiqi.blogmain.common.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

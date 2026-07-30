@@ -1,4 +1,4 @@
-package com.liushiqi.blogmain.util;
+package com.liushiqi.blogmain.security.util;
 
 import com.liushiqi.blogmain.entity.Users;
 import io.jsonwebtoken.Claims;

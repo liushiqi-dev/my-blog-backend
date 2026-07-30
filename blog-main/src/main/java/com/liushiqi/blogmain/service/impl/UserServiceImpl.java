@@ -1,9 +1,9 @@
 package com.liushiqi.blogmain.service.impl;
 
-import com.liushiqi.blogmain.Mapper.UserMapper;
+import com.liushiqi.blogmain.mapper.UserMapper;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
-import com.liushiqi.blogmain.common.BusinessException;
+import com.liushiqi.blogmain.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class UserServiceimpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;

@@ -1,4 +1,4 @@
-package com.liushiqi.blogmain.Mapper;
+package com.liushiqi.blogmain.mapper;
 
 import com.liushiqi.blogmain.entity.Users;
 import org.apache.ibatis.annotations.Mapper;

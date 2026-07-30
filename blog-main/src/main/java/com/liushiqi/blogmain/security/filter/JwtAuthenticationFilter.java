@@ -1,6 +1,6 @@
-package com.liushiqi.blogmain.security;
+package com.liushiqi.blogmain.security.filter;
 
-import com.liushiqi.blogmain.util.JwtUtils;
+import com.liushiqi.blogmain.security.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

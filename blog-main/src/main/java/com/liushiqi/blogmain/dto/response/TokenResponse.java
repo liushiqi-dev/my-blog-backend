@@ -1,4 +1,4 @@
-package com.liushiqi.blogmain.dto;
+package com.liushiqi.blogmain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
