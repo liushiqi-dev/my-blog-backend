@@ -2,6 +2,8 @@ package com.liushiqi.blogmain.common.exception;
 
 import com.liushiqi.blogmain.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +29,24 @@ public class GlobalExceptionHandler {
 
         log.warn("参数验证失败: {}", errorMessage);
         return Result.error("参数格式错误: " + errorMessage);
+    }
+
+    /**
+     * 请求体格式错误（如JSON解析失败、空body）
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Result handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("请求体格式错误: {}", e.getMessage());
+        return Result.error("请求体格式错误，请检查JSON格式");
+    }
+
+    /**
+     * 权限不足异常（@PreAuthorize校验失败时抛出）
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public Result handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("权限不足: {}", e.getMessage());
+        return Result.error("权限不足");
     }
 
     /**

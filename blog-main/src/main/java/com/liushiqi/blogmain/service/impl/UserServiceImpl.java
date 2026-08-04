@@ -3,6 +3,7 @@ package com.liushiqi.blogmain.service.impl;
 import com.liushiqi.blogmain.mapper.UserMapper;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
+import com.liushiqi.blogmain.vo.UserVO;
 import com.liushiqi.blogmain.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users login(Users users) {
         // 根据用户名查询用户
-        Users dbUser = userMapper.findByUsername(users.getUsername());
+        Users dbUser = userMapper.findByUsername(users);
 
         if (dbUser == null) {
             return null;  // 用户不存在
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
         // 加密密码
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
-        user.setRole("USER");  // 默认角色为 USER
+//        user.setRole("USER");  // 默认角色为 USER//数据库已有默认角色USER
 
         // 执行注册
         userMapper.insert(user);
@@ -63,10 +64,12 @@ public class UserServiceImpl implements UserService {
 
     // 获取用户信息
     @Override
-    public Users getUserInfo() {
+    public UserVO getUserInfo() {
         // 从 SecurityContext 中获取当前登录用户ID
         Long userId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         // 根据ID查询用户信息
-        return userMapper.findById(userId);
+        Users user = userMapper.findById(userId);
+        // 转换为VO，只返回前端需要的字段
+        return new UserVO(user.getUsername(), user.getRole(), user.getEmail());
     }
 }

@@ -1,9 +1,12 @@
 package com.liushiqi.blogmain.config;
 
 import com.liushiqi.blogmain.security.filter.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,9 +23,16 @@ import java.util.List;
 
 /**
  * Spring Security 配置类
+ *
+ * 方法级权限控制说明：
+ * 1. @EnableMethodSecurity 启用方法级安全注解（@PreAuthorize, @PostAuthorize等）
+ * 2. 推荐在Controller层使用 @PreAuthorize("hasRole('ADMIN')") 进行权限校验
+ * 3. 相比URL级权限，方法级权限更灵活，可结合业务逻辑进行复杂判断
+ * 4. 符合"快速失败"原则，在入口处拦截无权限请求，避免进入业务层
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -32,7 +42,7 @@ public class SecurityConfig {
      * 配置安全过滤器链
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/login", "/users/register").permitAll()  // 允许匿名访问
@@ -46,6 +56,15 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                     // 无状态 Session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+                // 异常处理：未登录访问受保护接口时返回HTTP 401 + 统一JSON格式
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"code\":2,\"message\":\"未登录\",\"data\":null}");
+                })
             )
             .csrf(AbstractHttpConfigurer::disable)  // 禁用 CSRF（前后端分离）
             .formLogin(AbstractHttpConfigurer::disable);  // 禁用默认登录页

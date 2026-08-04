@@ -1,5 +1,8 @@
 package com.liushiqi.blogmain.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 /**
@@ -8,15 +11,16 @@ import java.time.LocalDateTime;
 @lombok.Data
 public class Posts {
     /**
-     * 作者ID，作者ID
+     * 作者ID
      */
     private Long authorId;
     /**
-     * 正文，正文
+     * 正文
      */
+    @NotBlank(message = "正文不能为空")
     private String content;
     /**
-     * 创建时间，创建时间
+     * 创建时间
      */
     private LocalDateTime createTime;
     /**
@@ -28,15 +32,17 @@ public class Posts {
      */
     private Integer isDeleted;
     /**
-     * 摘要，正文前100字符
+     * 摘要，正文前100个字符
      */
     private String summary;
     /**
-     * 标题，标题
+     * 标题,100个字符
      */
+    @NotBlank(message = "标题不能为空")
+    @Size(max = 100, message = "标题长度不能超过100个字符")
     private String title;
     /**
-     * 修改时间，修改时间
+     * 修改时间
      */
     private LocalDateTime updateTime;
 }
