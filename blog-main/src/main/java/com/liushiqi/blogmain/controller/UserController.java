@@ -56,7 +56,6 @@ public class UserController {
     //获取用户信息
     @GetMapping("/me")
     public Result getUserInfo(){
-        // 从SecurityContext中获取当前登录用户
         UserVO userInfo = userService.getUserInfo();
         return Result.success(userInfo);
     }

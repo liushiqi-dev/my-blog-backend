@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         // 加密密码
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
-//        user.setRole("USER");  // 默认角色为 USER//数据库已有默认角色USER
+        user.setRole("USER");  // 默认角色为 USER//数据库已有默认角色USER
 
         // 执行注册
         userMapper.insert(user);
