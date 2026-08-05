@@ -9,9 +9,13 @@ import com.liushiqi.blogmain.vo.PostVo;
 public interface PostService {
     /**
      * 发布文章
+     *
+     * @return
      */
-    void publishPost(Posts posts);
+    PostVo publishPost(Posts posts);
 
     //修改文章
     PostVo updatePost(Posts posts);
+
+    PostVo getPostDetail(Long id);
 }

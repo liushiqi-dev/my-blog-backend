@@ -2,13 +2,14 @@ package com.liushiqi.blogmain.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
  * posts
  */
-@lombok.Data
+@Data
 public class Posts {
     /**
      * 作者ID
@@ -45,4 +46,8 @@ public class Posts {
      * 修改时间
      */
     private LocalDateTime updateTime;
+    /**
+     * 文章状态，PUBLISHED已发布 DRAFT草稿
+     */
+    private String status;
 }

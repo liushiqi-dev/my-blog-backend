@@ -8,12 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 文章控制器
@@ -21,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/posts")
-@PreAuthorize("hasRole('ADMIN')")
 public class PostController {
 
     @Autowired
@@ -35,18 +29,31 @@ public class PostController {
      * 3. 无权限时返回403 Forbidden，由Spring Security自动处理
      * 4. 相比在Service层手动检查，@PreAuthorize更符合声明式编程理念，代码更简洁
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Result publishPost(@Valid @RequestBody Posts posts) {
-        postService.publishPost(posts);
+        PostVo postVo =postService.publishPost(posts);
         log.info("文章发布成功");
-        return Result.success();
+        return Result.success(postVo);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Result updatePost(@PathVariable Long id, @Valid @RequestBody Posts posts) {
         posts.setId(id);
         PostVo postVo = postService.updatePost(posts);
         log.info("文章更新成功");
+        return Result.success(postVo);
+    }
+
+    /**
+     * 获取已发布文章详细信息
+     * @param id 文章ID
+     * @return 文章详细信息
+     */
+    @GetMapping("/{id}")
+    public Result getPostDetail(@PathVariable Long id) {
+        PostVo postVo = postService.getPostDetail(id);
         return Result.success(postVo);
     }
 }

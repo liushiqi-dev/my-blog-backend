@@ -21,9 +21,12 @@ public class PostServiceImpl implements PostService {
 
     /**
      * 发布文章
+     *
+     * @return
      */
     @Override
-    public void publishPost(Posts posts) {
+    public PostVo publishPost(Posts posts) {
+        // TODO: 用户可输入摘要，用户如不输入摘要则使用正文前100个字符作为摘要
         // 生成摘要
         posts.setSummary(posts.getContent().substring(0, Math.min(99, posts.getContent().length())));
 
@@ -33,8 +36,12 @@ public class PostServiceImpl implements PostService {
 
         // 设置删除状态为0
         posts.setIsDeleted(0);
+        // 设置文章状态为PUBLISHED
+        posts.setStatus("PUBLISHED");
+
         // 保存文章
         postMapper.insert(posts);
+        return postMapper.selectAll(posts.getId());
     }
 
     /**
@@ -46,12 +53,16 @@ public class PostServiceImpl implements PostService {
         postMapper.update(posts);
 
         // 查询文章信息
-        PostVo postVo=postMapper.selectAll();
-
-        //从SecurityContext中获取当前登录用户名
-        String authorName = (String) Objects.requireNonNull
-                (SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
-        postVo.setAuthorName(authorName);
-        return postVo;
+        return postMapper.selectAll(posts.getId());
     }
+
+    /**
+     * 获取文章详情
+     */
+    @Override
+    public PostVo getPostDetail(Long id) {
+        // 查询文章信息
+        return postMapper.selectAll(id);
+    }
+
 }

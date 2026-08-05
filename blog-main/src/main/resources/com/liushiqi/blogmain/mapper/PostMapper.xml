@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liushiqi.blogmain.mapper.PostMapper">
+
+    <!-- 发布文章 -->
+    <insert id="insert" useGeneratedKeys="true" parameterType="com.liushiqi.blogmain.entity.Posts"
+            keyProperty="id">
+        insert into posts (title,summary,content,is_deleted,author_id,status)
+        values (#{title},#{summary},#{content},#{isDeleted},#{authorId},#{status})
+    </insert>
+
+</mapper>

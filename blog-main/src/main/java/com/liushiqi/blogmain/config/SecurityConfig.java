@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Spring Security 配置类
- *
  * 方法级权限控制说明：
  * 1. @EnableMethodSecurity 启用方法级安全注解（@PreAuthorize, @PostAuthorize等）
  * 2. 推荐在Controller层使用 @PreAuthorize("hasRole('ADMIN')") 进行权限校验
@@ -42,11 +41,10 @@ public class SecurityConfig {
      * 配置安全过滤器链
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain filterChain(HttpSecurity http) {
+        http// 配置请求授权
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/login", "/users/register").permitAll()  // 允许匿名访问
-                .anyRequest().authenticated()  // 其他接口需要登录
+                .anyRequest().permitAll()
             )
                 // 配置跨域
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
