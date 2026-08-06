@@ -12,4 +12,6 @@ public interface PostService {
     PostVo updatePost(PostRequest req);
 
     PostVo getPostDetail(Long id);
+
+    PostVo getPostDetailAll(Long id);
 }

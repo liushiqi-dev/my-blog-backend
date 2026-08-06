@@ -48,4 +48,11 @@ public class PostController {
         PostVo postVo = postService.getPostDetail(id);
         return Result.success(postVo);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}/all")
+    public Result getPostDetailAll(@PathVariable Long id) {
+        PostVo postVo = postService.getPostDetailAll(id);
+        return Result.success(postVo);
+    }
 }

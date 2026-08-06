@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
         posts.setStatus("PUBLISHED");
 
         postMapper.insert(posts);
-        return postMapper.selectAll(posts.getId());
+        return postMapper.findById(posts.getId());
     }
 
     @Override
@@ -46,13 +46,21 @@ public class PostServiceImpl implements PostService {
         posts.setContent(req.getContent());
         posts.setSummary(req.getSummary());
         postMapper.update(posts);
-        // Fixme: 如将文章状态更新为草稿，则无法查询到文章详情。因为该SQL语句只查询已发布的文章。
-        return postMapper.selectAll(posts.getId());
+        return postMapper.findById(posts.getId());
     }
 
     @Override
     public PostVo getPostDetail(Long id) {
-        return postMapper.selectAll(id);
+        PostVo postVo = postMapper.findById(id);
+        if (!postVo.getStatus().equals("PUBLISHED")) {
+            return null;
+        }
+        return postVo;
+    }
+
+    @Override
+    public PostVo getPostDetailAll(Long id) {
+        return postMapper.findById(id);
     }
 
 }
