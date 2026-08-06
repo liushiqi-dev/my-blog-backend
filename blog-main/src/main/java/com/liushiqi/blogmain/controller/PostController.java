@@ -55,4 +55,11 @@ public class PostController {
         PostVo postVo = postService.getPostDetailAll(id);
         return Result.success(postVo);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public Result deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return Result.success();
+    }
 }

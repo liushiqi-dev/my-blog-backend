@@ -63,4 +63,9 @@ public class PostServiceImpl implements PostService {
         return postMapper.findById(id);
     }
 
+    @Override
+    public void deletePost(Long id) {
+        postMapper.deleteById(id);
+    }
+
 }

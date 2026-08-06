@@ -14,4 +14,6 @@ public interface PostService {
     PostVo getPostDetail(Long id);
 
     PostVo getPostDetailAll(Long id);
+
+    void deletePost(Long id);
 }
