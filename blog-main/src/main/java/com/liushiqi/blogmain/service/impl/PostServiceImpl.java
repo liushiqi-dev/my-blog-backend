@@ -1,5 +1,6 @@
 package com.liushiqi.blogmain.service.impl;
 
+import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.entity.Posts;
 import com.liushiqi.blogmain.mapper.PostMapper;
@@ -52,8 +53,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostVo getPostDetail(Long id) {
         PostVo postVo = postMapper.findById(id);
-        if (!postVo.getStatus().equals("PUBLISHED")) {
-            return null;
+        if(postVo==null||!postVo.getStatus().equals("PUBLISHED")){
+            throw new BusinessException("文章不存在");
         }
         return postVo;
     }

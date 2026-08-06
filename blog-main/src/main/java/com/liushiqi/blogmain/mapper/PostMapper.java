@@ -29,7 +29,7 @@ public interface PostMapper {
      * @param id 文章ID
      * @return 文章VO
      */
-    @Select("select p.title,p.summary,p.content,users.username authorName,p.create_time,p.update_time " +
+    @Select("select p.title,p.summary,p.content,users.username authorName,p.status,p.create_time,p.update_time " +
             "from posts p inner JOIN users on users.id=p.author_id " +
             "where is_deleted='0' and status='PUBLISHED' and p.id=#{id}")
     PostVo findById(Long id);
