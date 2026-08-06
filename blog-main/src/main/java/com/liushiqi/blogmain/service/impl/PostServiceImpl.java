@@ -19,49 +19,30 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostMapper postMapper;
 
-    /**
-     * 发布文章
-     *
-     * @return
-     */
     @Override
     public PostVo publishPost(Posts posts) {
         // TODO: 用户可输入摘要，用户如不输入摘要则使用正文前100个字符作为摘要
-        // 生成摘要
         posts.setSummary(posts.getContent().substring(0, Math.min(99, posts.getContent().length())));
 
-        // 设置作者ID
         Long authorId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         posts.setAuthorId(authorId);
 
-        // 设置删除状态为0
         posts.setIsDeleted(0);
-        // 设置文章状态为PUBLISHED
         posts.setStatus("PUBLISHED");
 
-        // 保存文章
         postMapper.insert(posts);
         return postMapper.selectAll(posts.getId());
     }
 
-    /**
-     * 修改文章
-     */
     @Override
     public PostVo updatePost(Posts posts) {
-        // 更新文章
         postMapper.update(posts);
-
-        // 查询文章信息
+        // Fixme: 如将文章状态更新为草稿，则无法查询到文章详情。因为该SQL语句只查询已发布的文章。
         return postMapper.selectAll(posts.getId());
     }
 
-    /**
-     * 获取文章详情
-     */
     @Override
     public PostVo getPostDetail(Long id) {
-        // 查询文章信息
         return postMapper.selectAll(id);
     }
 

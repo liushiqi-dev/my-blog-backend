@@ -13,11 +13,13 @@ import org.apache.ibatis.annotations.Update;
 public interface PostMapper {
     /**
      * 插入文章
+     * @param posts 文章内容
      */
     void insert(Posts posts);
 
     /**
-     * 修改文章
+     * 更新文章
+     * @param posts 文章内容
      */
     @Update("update posts set title=#{title},summary=#{summary},content=#{content} where id=#{id}")
     void update(Posts posts);
