@@ -2,6 +2,8 @@ package com.liushiqi.blogmain.controller;
 
 import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.common.result.Result;
+import com.liushiqi.blogmain.dto.request.LoginRequest;
+import com.liushiqi.blogmain.dto.request.RegisterRequest;
 import com.liushiqi.blogmain.dto.response.TokenResponse;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
@@ -29,9 +31,9 @@ public class UserController {
       3. 避免手写大量 if-else 校验逻辑，代码更简洁
      */
     @PostMapping("login")
-    public Result login(@Valid @RequestBody Users user){
+    public Result login(@Valid @RequestBody LoginRequest req){
         // 参数验证失败会自动抛出异常，由GlobalExceptionHandler处理
-        Users loggedInUser = userService.login(user);
+        Users loggedInUser = userService.login(req);
         if(loggedInUser == null) {
             throw new BusinessException("用户名或密码错误");
         }
@@ -41,8 +43,8 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public Result register(@Valid @RequestBody Users user){
-        Users registeredUser = userService.register(user);
+    public Result register(@Valid @RequestBody RegisterRequest req){
+        Users registeredUser = userService.register(req);
         // 注册成功后生成JWT token，直接登录
         String jwtToken = jwtUtils.generateJWTToken(registeredUser);
         return Result.success(new TokenResponse(jwtToken));

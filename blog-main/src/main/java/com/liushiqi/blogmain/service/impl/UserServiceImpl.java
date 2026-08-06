@@ -1,5 +1,7 @@
 package com.liushiqi.blogmain.service.impl;
 
+import com.liushiqi.blogmain.dto.request.LoginRequest;
+import com.liushiqi.blogmain.dto.request.RegisterRequest;
 import com.liushiqi.blogmain.mapper.UserMapper;
 import com.liushiqi.blogmain.entity.Users;
 import com.liushiqi.blogmain.service.UserService;
@@ -22,14 +24,14 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public Users login(Users users) {
-        Users dbUser = userMapper.findByUsername(users);
+    public Users login(LoginRequest req) {
+        Users dbUser = userMapper.findByUsername(req.getUsername());
 
         if (dbUser == null) {
             return null;
         }
 
-        if (!passwordEncoder.matches(users.getPassword(), dbUser.getPassword())) {
+        if (!passwordEncoder.matches(req.getPassword(), dbUser.getPassword())) {
             return null;
         }
 
@@ -37,17 +39,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users register(Users user) {
-        if (userMapper.existsByUsername(user.getUsername())) {
+    public Users register(RegisterRequest req) {
+        if (userMapper.existsByUsername(req.getUsername())) {
             throw new BusinessException("用户名已被占用");
         }
 
-        if (user.getEmail() != null && userMapper.existsByEmail(user.getEmail())) {
+        if (req.getEmail() != null && userMapper.existsByEmail(req.getEmail())) {
             throw new BusinessException("邮箱已被注册");
         }
 
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
+        Users user = new Users();
+        user.setUsername(req.getUsername());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setEmail(req.getEmail());
         // 显式设置默认角色（数据库虽有默认值，但显式设置更明确）
         user.setRole("USER");
 

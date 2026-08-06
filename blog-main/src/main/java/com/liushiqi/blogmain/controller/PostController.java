@@ -1,7 +1,7 @@
 package com.liushiqi.blogmain.controller;
 
 import com.liushiqi.blogmain.common.result.Result;
-import com.liushiqi.blogmain.entity.Posts;
+import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
 import jakarta.validation.Valid;
@@ -28,17 +28,17 @@ public class PostController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Result publishPost(@Valid @RequestBody Posts posts) {
-        PostVo postVo =postService.publishPost(posts);
+    public Result publishPost(@Valid @RequestBody PostRequest req) {
+        PostVo postVo = postService.publishPost(req);
         log.info("文章发布成功");
         return Result.success(postVo);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Result updatePost(@PathVariable Long id, @Valid @RequestBody Posts posts) {
-        posts.setId(id);
-        PostVo postVo = postService.updatePost(posts);
+    public Result updatePost(@PathVariable Long id, @Valid @RequestBody PostRequest req) {
+        req.setId(id);
+        PostVo postVo = postService.updatePost(req);
         log.info("文章更新成功");
         return Result.success(postVo);
     }

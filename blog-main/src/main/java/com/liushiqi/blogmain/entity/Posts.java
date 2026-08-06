@@ -1,7 +1,5 @@
 package com.liushiqi.blogmain.entity;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,7 +16,6 @@ public class Posts {
     /**
      * 正文
      */
-    @NotBlank(message = "正文不能为空")
     private String content;
     /**
      * 创建时间
@@ -39,8 +36,6 @@ public class Posts {
     /**
      * 标题,100个字符
      */
-    @NotBlank(message = "标题不能为空")
-    @Size(max = 100, message = "标题长度不能超过100个字符")
     private String title;
     /**
      * 修改时间

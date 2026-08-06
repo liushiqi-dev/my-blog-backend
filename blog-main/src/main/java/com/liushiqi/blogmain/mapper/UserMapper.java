@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 public interface UserMapper {
 
     @Select("select id, username, password, role from users where username=#{username}")
-    Users findByUsername(Users users);
+    Users findByUsername(String username);
 
     @Select("select count(*) > 0 from users where username=#{username}")
     boolean existsByUsername(String username);
