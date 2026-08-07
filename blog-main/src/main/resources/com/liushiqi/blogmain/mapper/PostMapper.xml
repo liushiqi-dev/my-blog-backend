@@ -9,4 +9,8 @@
         values (#{title},#{summary},#{content},#{isDeleted},#{authorId},#{status})
     </insert>
 
+<!--        @Update("update posts set is_deleted='1' where id=#{id}")-->
+    <update id="deleteById" parameterType="java.lang.Long">
+        update posts set is_deleted=1 where id=#{id} and is_deleted=0
+    </update>
 </mapper>

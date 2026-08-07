@@ -61,12 +61,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostVo getPostDetailAll(Long id) {
-        return postMapper.findById(id);
+        PostVo postVo = postMapper.findById(id);
+        if(postVo==null){
+            throw new BusinessException("文章不存在");
+        }
+        return postVo;
     }
 
     @Override
     public void deletePost(Long id) {
-        postMapper.deleteById(id);
+        int rows = postMapper.deleteById(id);
+        if(rows==0){
+            throw new BusinessException("文章不存在");
+        }
     }
 
 }

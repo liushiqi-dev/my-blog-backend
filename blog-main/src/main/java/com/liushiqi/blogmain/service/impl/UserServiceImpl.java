@@ -28,11 +28,11 @@ public class UserServiceImpl implements UserService {
         Users dbUser = userMapper.findByUsername(req.getUsername());
 
         if (dbUser == null) {
-            return null;
+            throw new BusinessException("用户名或密码错误");
         }
 
         if (!passwordEncoder.matches(req.getPassword(), dbUser.getPassword())) {
-            return null;
+            throw new BusinessException("用户名或密码错误");
         }
 
         return dbUser;

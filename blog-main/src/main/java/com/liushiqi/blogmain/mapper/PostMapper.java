@@ -34,6 +34,5 @@ public interface PostMapper {
             "where is_deleted='0' and status='PUBLISHED' and p.id=#{id}")
     PostVo findById(Long id);
 
-    @Update("update posts set is_deleted='1' where id=#{id}")
-    void deleteById(Long id);
+    int deleteById(Long id);
 }

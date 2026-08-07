@@ -1,6 +1,5 @@
 package com.liushiqi.blogmain.controller;
 
-import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.common.result.Result;
 import com.liushiqi.blogmain.dto.request.LoginRequest;
 import com.liushiqi.blogmain.dto.request.RegisterRequest;
@@ -34,9 +33,6 @@ public class UserController {
     public Result login(@Valid @RequestBody LoginRequest req){
         // 参数验证失败会自动抛出异常，由GlobalExceptionHandler处理
         Users loggedInUser = userService.login(req);
-        if(loggedInUser == null) {
-            throw new BusinessException("用户名或密码错误");
-        }
 
         String jwtToken = jwtUtils.generateJWTToken(loggedInUser);
         return Result.success(new TokenResponse(jwtToken));
