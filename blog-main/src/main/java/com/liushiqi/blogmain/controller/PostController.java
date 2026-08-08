@@ -5,9 +5,11 @@ import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -61,5 +63,15 @@ public class PostController {
     public Result deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return Result.success();
+    }
+
+    @Validated
+    @GetMapping
+    public Result listPosts(
+            @RequestParam(defaultValue = "1") @Min(1) Integer page,
+            @RequestParam(defaultValue = "10") @Min(10) Integer size,
+            @RequestParam(required = false) String status
+            ) {
+        return Result.success(postService.listPosts(page,size,status));
     }
 }

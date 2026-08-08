@@ -1,7 +1,9 @@
 package com.liushiqi.blogmain.service;
 
+import com.liushiqi.blogmain.common.result.PageResult;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.vo.PostVo;
+
 
 /**
  * 文章业务逻辑接口
@@ -16,4 +18,6 @@ public interface PostService {
     PostVo getPostDetailAll(Long id);
 
     void deletePost(Long id);
+
+    PageResult listPosts(Integer page, Integer size, String status);
 }

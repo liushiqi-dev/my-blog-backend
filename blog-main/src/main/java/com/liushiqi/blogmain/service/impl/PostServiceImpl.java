@@ -1,12 +1,14 @@
 package com.liushiqi.blogmain.service.impl;
 
 import com.liushiqi.blogmain.common.exception.BusinessException;
+import com.liushiqi.blogmain.common.result.PageResult;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.entity.Posts;
 import com.liushiqi.blogmain.mapper.PostMapper;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -76,4 +78,20 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Override
+    public PageResult listPosts(Integer page, Integer size, String status){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
+        int offset=(page-1)*size;
+        if(size>50){
+            size=50;
+        }
+        if(!isAdmin){
+            status="PUBLISHED";
+        }
+        return new PageResult<>(
+                postMapper.findPage(offset,size,status),
+                postMapper.getTotal(status),page,size);
+    }
 }

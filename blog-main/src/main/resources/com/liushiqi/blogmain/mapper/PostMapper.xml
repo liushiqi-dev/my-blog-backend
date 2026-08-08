@@ -9,8 +9,28 @@
         values (#{title},#{summary},#{content},#{isDeleted},#{authorId},#{status})
     </insert>
 
-<!--        @Update("update posts set is_deleted='1' where id=#{id}")-->
+    <!--删除文章 -->
     <update id="deleteById" parameterType="java.lang.Long">
         update posts set is_deleted=1 where id=#{id} and is_deleted=0
     </update>
+
+    <!--获取文章总数 -->
+    <select id="getTotal" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from posts
+        <where>
+            p.is_deleted=0
+            <if test="status!=null and status!=''" >and status=#{status}</if>
+        </where>
+    </select>
+
+    <!--获取文章分页列表 -->
+    <select id="findPage" resultType="com.liushiqi.blogmain.vo.PageVo">
+        select p.id,p.title,p.summary,u.username authorName,p.status,p.create_time from posts p
+            join users u on author_id=u.id
+        <where>
+        p.is_deleted=0
+        <if test="status!=null and status!=''">and p.status=#{status}</if>
+        </where>
+        order by p.create_time desc limit #{page},#{size}
+    </select>
 </mapper>
