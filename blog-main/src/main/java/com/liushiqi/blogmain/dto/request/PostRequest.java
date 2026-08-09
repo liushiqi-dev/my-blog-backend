@@ -1,8 +1,11 @@
 package com.liushiqi.blogmain.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 文章发布/更新请求DTO
@@ -18,6 +21,9 @@ public class PostRequest {
 
     @NotBlank(message = "正文不能为空")
     private String content;
+
+    @NotEmpty(message = "分类不能为空")
+    private List<Integer> categoryIds;
 
     private String summary;
 }

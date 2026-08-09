@@ -14,12 +14,15 @@ import java.util.List;
  */
 @Mapper
 public interface PostMapper {
+
+    Integer countCategoriesByIds(List<Integer> categoryIds);
     /**
-     * 插入文章
+     * 插入文章 插入成功后将文章ID赋值给posts id
      * @param posts 文章内容
      */
     void insert(Posts posts);
 
+    void insertCategories(Long postId, List<Integer> categoryIds);
     /**
      * 更新文章
      * @param posts 文章内容

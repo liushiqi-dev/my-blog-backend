@@ -2,11 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liushiqi.blogmain.mapper.PostMapper">
 
+    <!-- 根据分类ID查询分类ID -->
+    <select id="countCategoriesByIds" resultType="java.lang.Integer">
+        select count(*) from categories where id in
+        (<foreach collection="categoryIds" item="id" separator=",">
+        #{id}
+    </foreach>)
+    </select>
+
     <!-- 发布文章 -->
     <insert id="insert" useGeneratedKeys="true" parameterType="com.liushiqi.blogmain.entity.Posts"
             keyProperty="id">
         insert into posts (title,summary,content,is_deleted,author_id,status)
         values (#{title},#{summary},#{content},#{isDeleted},#{authorId},#{status})
+    </insert>
+
+    <!-- 插入文章分类 -->
+    <insert id="insertCategories">
+        insert into post_categories (post_id, category_id) values
+         <foreach collection="categoryIds" item="category_id" separator=",">
+        (#{postId},#{category_id})
+    </foreach>
     </insert>
 
     <!--删除文章 -->

@@ -25,19 +25,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostVo publishPost(PostRequest req) {
-        // TODO: 用户可输入摘要，用户如不输入摘要则使用正文前100个字符作为摘要
         Posts posts = new Posts();
         posts.setTitle(req.getTitle());
         posts.setContent(req.getContent());
-        posts.setSummary(req.getContent().substring(0, Math.min(99, req.getContent().length())));
-
+        if (req.getSummary()==null){
+            posts.setSummary(req.getContent().substring(0, Math.min(100, req.getContent().length())));
+        }else{
+            posts.setSummary(req.getSummary());
+        }
         Long authorId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         posts.setAuthorId(authorId);
 
         posts.setIsDeleted(0);
         posts.setStatus("PUBLISHED");
-
+        Integer categoryCount= postMapper.countCategoriesByIds(req.getCategoryIds());
+        if(categoryCount!=req.getCategoryIds().size()){
+            throw new BusinessException("分类不存在");
+        }
         postMapper.insert(posts);
+        postMapper.insertCategories(posts.getId(),req.getCategoryIds());
         return postMapper.findById(posts.getId());
     }
 
