@@ -18,6 +18,7 @@ public class PostVo {
     private String content;
     private String summary;
     private String status;
+    private String categoryNames;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
