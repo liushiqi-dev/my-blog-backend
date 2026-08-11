@@ -23,30 +23,24 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostMapper postMapper;
 
+    //todo:只能直接发布文章，不能存为草稿
     @Override
     public PostVo publishPost(PostRequest req) {
-        Posts posts = new Posts();
-        posts.setTitle(req.getTitle());
-        posts.setContent(req.getContent());
         if (req.getSummary()==null){
-            posts.setSummary(req.getContent().substring(0, Math.min(100, req.getContent().length())));
-        }else{
-            posts.setSummary(req.getSummary());
+            req.setSummary(req.getContent().substring(0, Math.min(100, req.getContent().length())));
         }
         Long authorId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
-        posts.setAuthorId(authorId);
 
-        posts.setIsDeleted(0);
-        posts.setStatus("PUBLISHED");
         Integer categoryCount= postMapper.countCategoriesByIds(req.getCategoryIds());
         if(categoryCount!=req.getCategoryIds().size()){
             throw new BusinessException("分类不存在");
         }
-        postMapper.insert(posts);
-        postMapper.insertCategories(posts.getId(),req.getCategoryIds());
-        return postMapper.findById(posts.getId());
+        postMapper.insert(authorId,req);
+        postMapper.insertCategories(req.getId(),req.getCategoryIds());
+        return postMapper.findById(req.getId());
     }
 
+    //todo:待实现更新status
     @Override
     public PostVo updatePost(PostRequest req) {
         Posts posts = new Posts();

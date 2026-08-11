@@ -1,5 +1,6 @@
 package com.liushiqi.blogmain.mapper;
 
+import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.entity.Posts;
 import com.liushiqi.blogmain.vo.PageVo;
 import com.liushiqi.blogmain.vo.PostVo;
@@ -18,9 +19,8 @@ public interface PostMapper {
     Integer countCategoriesByIds(List<Integer> categoryIds);
     /**
      * 插入文章 插入成功后将文章ID赋值给posts id
-     * @param posts 文章内容
      */
-    void insert(Posts posts);
+    void insert(Long authorId, PostRequest req);
 
     void insertCategories(Long postId, List<Integer> categoryIds);
     /**
