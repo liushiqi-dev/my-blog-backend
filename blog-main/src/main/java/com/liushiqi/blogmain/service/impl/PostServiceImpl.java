@@ -82,6 +82,7 @@ public class PostServiceImpl implements PostService {
         if(rows==0){
             throw new BusinessException("文章不存在");
         }
+        postMapper.deleteCategoriesByPostId(id);
     }
 
     @Override
