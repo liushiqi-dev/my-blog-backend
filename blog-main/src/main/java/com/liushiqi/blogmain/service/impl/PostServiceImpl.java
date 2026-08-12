@@ -3,20 +3,22 @@ package com.liushiqi.blogmain.service.impl;
 import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.common.result.PageResult;
 import com.liushiqi.blogmain.dto.request.PostRequest;
-import com.liushiqi.blogmain.entity.Posts;
 import com.liushiqi.blogmain.mapper.PostMapper;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
 /**
  * 文章业务逻辑实现
  */
+@Slf4j
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -41,15 +43,18 @@ public class PostServiceImpl implements PostService {
     }
 
     //todo:待实现更新status
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public PostVo updatePost(PostRequest req) {
-        Posts posts = new Posts();
-        posts.setId(req.getId());
-        posts.setTitle(req.getTitle());
-        posts.setContent(req.getContent());
-        posts.setSummary(req.getSummary());
-        postMapper.update(posts);
-        return postMapper.findById(posts.getId());
+        Integer categoryCount= postMapper.countCategoriesByIds(req.getCategoryIds());
+        if(categoryCount!=req.getCategoryIds().size()){
+            log.error("分类不存在");
+            throw new BusinessException("分类不存在");
+        }
+        postMapper.update(req);
+        postMapper.deleteCategoriesByPostId(req.getId());
+        postMapper.insertCategories(req.getId(),req.getCategoryIds());
+        return postMapper.findById(req.getId());
     }
 
     @Override

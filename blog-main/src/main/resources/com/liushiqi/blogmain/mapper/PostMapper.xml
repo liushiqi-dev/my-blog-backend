@@ -24,6 +24,10 @@
     </foreach>
     </insert>
 
+    <!-- 删除文章分类关联 -->
+    <delete id="deleteCategoriesByPostId">
+        delete from post_categories where post_id=#{postId}
+    </delete>
     <!--删除文章 -->
     <update id="deleteById" parameterType="java.lang.Long">
         update posts set is_deleted=1 where id=#{id} and is_deleted=0

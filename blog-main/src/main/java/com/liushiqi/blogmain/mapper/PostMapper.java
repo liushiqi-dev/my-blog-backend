@@ -1,7 +1,6 @@
 package com.liushiqi.blogmain.mapper;
 
 import com.liushiqi.blogmain.dto.request.PostRequest;
-import com.liushiqi.blogmain.entity.Posts;
 import com.liushiqi.blogmain.vo.PageVo;
 import com.liushiqi.blogmain.vo.PostVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,12 +22,14 @@ public interface PostMapper {
     void insert(Long authorId, PostRequest req);
 
     void insertCategories(Long postId, List<Integer> categoryIds);
+
+
+    void deleteCategoriesByPostId(Long id);
     /**
-     * 更新文章
-     * @param posts 文章内容
+     * 文章详情
      */
     @Update("update posts set title=#{title},summary=#{summary},content=#{content} where id=#{id}")
-    void update(Posts posts);
+    void update(PostRequest req);
 
     /**
      * 获取文章详情
