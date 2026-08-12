@@ -32,7 +32,7 @@ public class PostController {
     @PostMapping
     public Result publishPost(@Valid @RequestBody PostRequest req) {
         PostVo postVo = postService.publishPost(req);
-        log.info("文章发布成功");
+        log.info("文章发布成功，文章ID：{}", postVo.getId());
         return Result.success(postVo);
     }
 
@@ -41,13 +41,14 @@ public class PostController {
     public Result updatePost(@PathVariable Long id, @Valid @RequestBody PostRequest req) {
         req.setId(id);
         PostVo postVo = postService.updatePost(req);
-        log.info("文章更新成功");
+        log.info("文章更新成功，文章ID：{}", postVo.getId());
         return Result.success(postVo);
     }
 
     @GetMapping("/{id}")
     public Result getPostDetail(@PathVariable Long id) {
         PostVo postVo = postService.getPostDetail(id);
+        log.info("获取已发布文章详情成功，文章ID：{}", postVo.getId());
         return Result.success(postVo);
     }
 
@@ -55,6 +56,7 @@ public class PostController {
     @GetMapping("/{id}/all")
     public Result getPostDetailAll(@PathVariable Long id) {
         PostVo postVo = postService.getPostDetailAll(id);
+        log.info("获取所有文章详情成功，文章ID：{}", postVo.getId());
         return Result.success(postVo);
     }
 
@@ -62,6 +64,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public Result deletePost(@PathVariable Long id) {
         postService.deletePost(id);
+        log.info("删除文章成功，文章ID：{}", id);
         return Result.success();
     }
 
@@ -72,6 +75,7 @@ public class PostController {
             @RequestParam(defaultValue = "10") @Min(10) Integer size,
             @RequestParam(required = false) String status
             ) {
+        log.info("获取文章列表，分页参数：page={}, size={}, status={}", page, size, status);
         return Result.success(postService.listPosts(page,size,status));
     }
 }

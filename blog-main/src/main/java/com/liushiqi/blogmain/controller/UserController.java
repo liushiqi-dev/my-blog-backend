@@ -9,9 +9,11 @@ import com.liushiqi.blogmain.service.UserService;
 import com.liushiqi.blogmain.security.util.JwtUtils;
 import com.liushiqi.blogmain.vo.UserVO;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -33,8 +35,8 @@ public class UserController {
     public Result login(@Valid @RequestBody LoginRequest req){
         // 参数验证失败会自动抛出异常，由GlobalExceptionHandler处理
         Users loggedInUser = userService.login(req);
-
         String jwtToken = jwtUtils.generateJWTToken(loggedInUser);
+        log.info("登录成功，用户ID：{}", loggedInUser.getId());
         return Result.success(new TokenResponse(jwtToken));
     }
 
@@ -43,12 +45,14 @@ public class UserController {
         Users registeredUser = userService.register(req);
         // 注册成功后生成JWT token，直接登录
         String jwtToken = jwtUtils.generateJWTToken(registeredUser);
+        log.info("注册成功，用户ID：{}", registeredUser.getId());
         return Result.success(new TokenResponse(jwtToken));
     }
 
     @GetMapping("/me")
     public Result getUserInfo(){
         UserVO userInfo = userService.getUserInfo();
+        log.info("获取用户信息，用户名：{}", userInfo.getUsername());
         return Result.success(userInfo);
     }
 }

@@ -27,6 +27,7 @@ public class PostServiceImpl implements PostService {
 
     //todo:只能直接发布文章，不能存为草稿
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PostVo publishPost(PostRequest req) {
         if (req.getSummary()==null){
             req.setSummary(req.getContent().substring(0, Math.min(100, req.getContent().length())));
@@ -43,12 +44,11 @@ public class PostServiceImpl implements PostService {
     }
 
     //todo:待实现更新status
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PostVo updatePost(PostRequest req) {
         Integer categoryCount= postMapper.countCategoriesByIds(req.getCategoryIds());
         if(categoryCount!=req.getCategoryIds().size()){
-            log.error("分类不存在");
             throw new BusinessException("分类不存在");
         }
         postMapper.update(req);
@@ -76,6 +76,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deletePost(Long id) {
         int rows = postMapper.deleteById(id);
         if(rows==0){
