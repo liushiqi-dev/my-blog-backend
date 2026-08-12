@@ -35,7 +35,7 @@ public interface PostMapper {
      * @param id 文章ID
      * @return 文章VO
      */
-    @Select("select p.title,p.summary,p.content,users.username authorName," +
+    @Select("select p.id,p.title,p.summary,p.content,users.username authorName," +
             "       group_concat(categories.name) categoryNames" +
             "       ,p.status,p.create_time,p.update_time" +
             "            from posts p" +

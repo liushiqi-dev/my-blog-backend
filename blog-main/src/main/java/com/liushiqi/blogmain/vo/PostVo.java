@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostVo {
+    private Long id;
     private String authorName;
     private String title;
     private String content;
