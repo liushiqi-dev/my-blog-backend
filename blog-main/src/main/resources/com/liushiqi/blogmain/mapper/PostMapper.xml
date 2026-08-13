@@ -12,8 +12,8 @@
 
     <!-- 发布文章 -->
     <insert id="insert" keyProperty="req.id" useGeneratedKeys="true">
-        insert into posts (title,summary,content,author_id)
-        values (#{req.title},#{req.summary},#{req.content},#{authorId})
+        insert into posts (title,summary,content,author_id,status)
+        values (#{req.title},#{req.summary},#{req.content},#{authorId},#{req.status})
     </insert>
 
     <!-- 插入文章分类 -->

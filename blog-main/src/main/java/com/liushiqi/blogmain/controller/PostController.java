@@ -21,7 +21,7 @@ public class PostController {
     private PostService postService;
 
     /*
-      发布文章（仅管理员）
+      创建文章（仅管理员）
       权限校验说明：
       1. @PreAuthorize("hasRole('ADMIN')") 在方法执行前检查用户是否具有ADMIN角色
       2. Spring Security会自动添加ROLE_前缀，因此数据库中存储的角色应为ADMIN而非ROLE_ADMIN
@@ -30,9 +30,9 @@ public class PostController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Result publishPost(@Valid @RequestBody PostRequest req) {
-        PostVo postVo = postService.publishPost(req);
-        log.info("文章发布成功，文章ID：{}", postVo.getId());
+    public Result createPost(@Valid @RequestBody PostRequest req) {
+        PostVo postVo = postService.createPost(req);
+        log.info("创建文章成功，文章ID：{}，状态：{}", postVo.getId(), postVo.getStatus());
         return Result.success(postVo);
     }
 

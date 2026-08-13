@@ -2,6 +2,7 @@ package com.liushiqi.blogmain.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -24,6 +25,10 @@ public class PostRequest {
 
     @NotEmpty(message = "分类不能为空")
     private List<Integer> categoryIds;
+
+    @NotBlank(message = "状态不能为空")
+    @Pattern(regexp = "PUBLISHED|DRAFT", message = "状态只能为PUBLISHED或DRAFT")
+    private String status;
 
     private String summary;
 }

@@ -25,10 +25,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostMapper postMapper;
 
-    //todo:只能直接发布文章，不能存为草稿
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostVo publishPost(PostRequest req) {
+    public PostVo createPost(PostRequest req) {
         if (req.getSummary()==null){
             req.setSummary(req.getContent().substring(0, Math.min(100, req.getContent().length())));
         }

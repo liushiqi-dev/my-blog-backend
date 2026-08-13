@@ -9,7 +9,7 @@ import com.liushiqi.blogmain.vo.PostVo;
  * 文章业务逻辑接口
  */
 public interface PostService {
-    PostVo publishPost(PostRequest req);
+    PostVo createPost(PostRequest req);
 
     PostVo updatePost(PostRequest req);
 
