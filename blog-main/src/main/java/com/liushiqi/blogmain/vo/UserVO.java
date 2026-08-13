@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVO {
+public class UserVO {//fixme:末尾为VO Vo待商榷
     private String username;
     private String role;
     private String email;
