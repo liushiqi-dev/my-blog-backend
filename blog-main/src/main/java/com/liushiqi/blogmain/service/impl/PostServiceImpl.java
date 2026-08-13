@@ -42,7 +42,6 @@ public class PostServiceImpl implements PostService {
         return postMapper.findById(req.getId());
     }
 
-    //todo:待实现更新status
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PostVo updatePost(PostRequest req) {

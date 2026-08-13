@@ -28,7 +28,7 @@ public interface PostMapper {
     /**
      * 文章详情
      */
-    @Update("update posts set title=#{title},summary=#{summary},content=#{content} where id=#{id}")
+    @Update("update posts set title=#{title},summary=#{summary},content=#{content},status=#{status} where id=#{id}")
     void update(PostRequest req);
 
     /**
