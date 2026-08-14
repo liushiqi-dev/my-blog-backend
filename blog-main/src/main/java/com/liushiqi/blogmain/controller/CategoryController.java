@@ -35,6 +35,7 @@ public class CategoryController {
         return Result.success(categoryVos);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public Result updateCategory(@Valid @RequestBody CategoryRequest req){
         req = categoryService.updateCategory(req);
