@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/categories")
@@ -21,8 +23,15 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Result createCategory(@Valid @RequestBody CategoryRequest req) {
-        CategoryVo categoryVo = categoryService.createCategory(req);
-        log.info("创建分类成功，分类ID：{}，分类名称：{}", categoryVo.getId(),categoryVo.getName());
-        return Result.success(categoryVo);
+        req = categoryService.createCategory(req);
+        log.info("创建分类成功，分类ID：{}，分类名称：{}", req.getId(),req.getName());
+        return Result.success(req);
+    }
+
+    @GetMapping("/list")
+    public Result listCategories(){
+        List<CategoryVo> categoryVos = categoryService.listCategories();
+        log.info("查询分类列表成功，分类数量：{}", categoryVos.size());
+        return Result.success(categoryVos);
     }
 }

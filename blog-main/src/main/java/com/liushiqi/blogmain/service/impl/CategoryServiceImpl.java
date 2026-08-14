@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -20,12 +22,17 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CategoryVo createCategory(CategoryRequest req) {
+    public CategoryRequest createCategory(CategoryRequest req) {
         try {
             categoryMapper.insert(req);
         } catch (Exception e) {
             throw new BusinessException("分类名称已存在");
         }
-        return new CategoryVo(req.getId(),req.getName());
+        return req;
+    }
+
+    @Override
+    public List<CategoryVo> listCategories(){
+        return categoryMapper.findAll();
     }
 }

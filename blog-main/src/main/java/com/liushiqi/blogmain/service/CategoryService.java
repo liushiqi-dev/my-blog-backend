@@ -3,7 +3,11 @@ package com.liushiqi.blogmain.service;
 import com.liushiqi.blogmain.dto.request.CategoryRequest;
 import com.liushiqi.blogmain.vo.CategoryVo;
 
+import java.util.List;
+
 public interface CategoryService {
 
-    CategoryVo createCategory(CategoryRequest req);
+    CategoryRequest createCategory(CategoryRequest req);
+
+    List<CategoryVo> listCategories();
 }
