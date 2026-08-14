@@ -48,4 +48,19 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return req;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCategory(Long id) {
+        if (categoryMapper.countPostsByCategory(id)!=null) {
+            throw new BusinessException("分类下有文章，不能删除");
+        }
+        try {
+            if (categoryMapper.delete(id) == 0) {
+                throw new BusinessException("分类不存在");
+            }
+        } catch (Exception e) {
+            throw new BusinessException("删除分类失败");
+        }
+    }
 }

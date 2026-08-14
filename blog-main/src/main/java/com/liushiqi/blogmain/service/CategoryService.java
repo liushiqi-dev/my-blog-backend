@@ -11,4 +11,6 @@ public interface CategoryService {
     List<CategoryVo> listCategories();
 
     CategoryRequest updateCategory(CategoryRequest req);
+
+    void deleteCategory(Long id);
 }

@@ -41,4 +41,12 @@ public class CategoryController {
         log.info("更新分类成功，分类ID：{}，分类名称：{}", req.getId(),req.getName());
         return Result.success(req);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public Result deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+        log.info("删除分类成功，分类ID：{}", id);
+        return Result.success();
+    }
 }

@@ -2,6 +2,7 @@ package com.liushiqi.blogmain.mapper;
 
 import com.liushiqi.blogmain.dto.request.CategoryRequest;
 import com.liushiqi.blogmain.vo.CategoryVo;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -19,4 +20,11 @@ public interface CategoryMapper {
 
     @Update("update categories set name=#{name} where id=#{id}")
     int update(CategoryRequest req);
+
+    @Select("select count(*) total from categories c inner join post_categories p on p.category_id=c.id" +
+            "    where c.id=#{id}   group by c.id;")
+    Long countPostsByCategory(Long id);
+
+    @Delete("delete from categories where id=#{id}")
+    int delete(Long id);
 }
