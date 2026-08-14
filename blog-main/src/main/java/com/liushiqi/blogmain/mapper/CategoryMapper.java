@@ -19,12 +19,12 @@ public interface CategoryMapper {
     List<CategoryVo> findAll();
 
     @Update("update categories set name=#{name} where id=#{id}")
-    int update(CategoryRequest req);
+    void update(CategoryRequest req);
 
     @Select("select count(*) total from categories c inner join post_categories p on p.category_id=c.id" +
             "    where c.id=#{id}   group by c.id;")
     Long countPostsByCategory(Long id);
 
     @Delete("delete from categories where id=#{id}")
-    int delete(Long id);
+    void delete(Long id);
 }

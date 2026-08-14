@@ -40,9 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(rollbackFor = Exception.class)
     public CategoryRequest updateCategory(CategoryRequest req) {
         try {
-            if (categoryMapper.update(req) == 0) {
-                throw new BusinessException("分类不存在");
-            }
+            categoryMapper.update(req);
         } catch (Exception e) {
             throw new BusinessException("分类名称已存在");
         }
@@ -56,9 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new BusinessException("分类下有文章，不能删除");
         }
         try {
-            if (categoryMapper.delete(id) == 0) {
-                throw new BusinessException("分类不存在");
-            }
+            categoryMapper.delete(id);
         } catch (Exception e) {
             throw new BusinessException("删除分类失败");
         }
