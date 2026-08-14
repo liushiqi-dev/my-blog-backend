@@ -35,4 +35,17 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryVo> listCategories(){
         return categoryMapper.findAll();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CategoryRequest updateCategory(CategoryRequest req) {
+        try {
+            if (categoryMapper.update(req) == 0) {
+                throw new BusinessException("分类不存在");
+            }
+        } catch (Exception e) {
+            throw new BusinessException("分类名称已存在");
+        }
+        return req;
+    }
 }

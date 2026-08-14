@@ -34,4 +34,11 @@ public class CategoryController {
         log.info("查询分类列表成功，分类数量：{}", categoryVos.size());
         return Result.success(categoryVos);
     }
+
+    @PutMapping
+    public Result updateCategory(@Valid @RequestBody CategoryRequest req){
+        req = categoryService.updateCategory(req);
+        log.info("更新分类成功，分类ID：{}，分类名称：{}", req.getId(),req.getName());
+        return Result.success(req);
+    }
 }
