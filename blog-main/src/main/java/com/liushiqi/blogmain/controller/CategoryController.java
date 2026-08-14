@@ -28,7 +28,7 @@ public class CategoryController {
         return Result.success(req);
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public Result listCategories(){
         List<CategoryVo> categoryVos = categoryService.listCategories();
         log.info("查询分类列表成功，分类数量：{}", categoryVos.size());
@@ -36,8 +36,9 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping
-    public Result updateCategory(@Valid @RequestBody CategoryRequest req){
+    @PutMapping("/{id}")
+    public Result updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest req){
+        req.setId(id);
         req = categoryService.updateCategory(req);
         log.info("更新分类成功，分类ID：{}，分类名称：{}", req.getId(),req.getName());
         return Result.success(req);
