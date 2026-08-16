@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="zh" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 个人博客</title>
+    <style id="theme-vars" data-dom-id="theme-vars">
+/* Blog Prototype — Apple 风格 */
+
+:root {
+  /* Brand hue: Apple Blue */
+  --bp-primary: #0071e3;
+  --bp-primary-50: #f0f7ff;
+  --bp-primary-100: #dcebfe;
+  --bp-primary-200: #bddafd;
+  --bp-primary-600: #0071e3;
+  --bp-primary-700: #0077ed;
+  --bp-primary-foreground: #ffffff;
+
+  /* Apple-style neutral scale */
+  --bp-slate-50: #f5f5f7;
+  --bp-slate-100: #f0f0f0;
+  --bp-slate-200: #e8e8ed;
+  --bp-slate-300: #d2d2d7;
+  --bp-slate-400: #a1a1a6;
+  --bp-slate-500: #86868b;
+  --bp-slate-600: #6e6e73;
+  --bp-slate-700: #424245;
+  --bp-slate-800: #1d1d1f;
+  --bp-slate-900: #000000;
+
+  /* Semantic aliases required by head contract */
+  --bp-background: #ffffff;
+  --bp-foreground: #1d1d1f;
+  --bp-card: #ffffff;
+  --bp-card-foreground: #1d1d1f;
+  --bp-popover: #ffffff;
+  --bp-popover-foreground: #1d1d1f;
+  --bp-primary: #0071e3;
+  --bp-primary-foreground: #ffffff;
+  --bp-muted: #f5f5f7;
+  --bp-muted-foreground: #86868b;
+  --bp-border: #f0f0f0;
+  --bp-input: #e8e8ed;
+  --bp-ring: #0071e3;
+
+  /* Radius scale */
+  --bp-radius-sm: 6px;
+  --bp-radius-md: 10px;
+  --bp-radius-lg: 16px;
+  --bp-radius-full: 9999px;
+
+  /* State colors */
+  --bp-state-success: #34c759;
+  --bp-state-success-bg: #f2fbf5;
+  --bp-state-warning: #ff9500;
+  --bp-state-warning-bg: #fff8ee;
+  --bp-state-error: #ff3b30;
+  --bp-state-error-bg: #fff4f3;
+  --bp-state-info: #0071e3;
+  --bp-state-info-bg: #f0f7ff;
+
+  /* Typography */
+  --bp-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --bp-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --bp-title-1-size: 2.75rem;
+  --bp-title-1-weight: 700;
+  --bp-title-1-leading: 1.1;
+  --bp-title-2-size: 1.875rem;
+  --bp-title-2-weight: 600;
+  --bp-title-2-leading: 1.2;
+  --bp-title-3-size: 1.25rem;
+  --bp-title-3-weight: 600;
+  --bp-title-3-leading: 1.35;
+  --bp-body-size: 1rem;
+  --bp-body-leading: 1.75;
+  --bp-small-size: 0.875rem;
+  --bp-small-leading: 1.5;
+}
+
+.bp-title-1 {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-title-1-size);
+  font-weight: var(--bp-title-1-weight);
+  line-height: var(--bp-title-1-leading);
+  letter-spacing: -0.02em;
+  color: var(--bp-foreground);
+}
+
+.bp-title-2 {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-title-2-size);
+  font-weight: var(--bp-title-2-weight);
+  line-height: var(--bp-title-2-leading);
+  letter-spacing: -0.01em;
+  color: var(--bp-foreground);
+}
+
+.bp-title-3 {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-title-3-size);
+  font-weight: var(--bp-title-3-weight);
+  line-height: var(--bp-title-3-leading);
+  letter-spacing: -0.005em;
+  color: var(--bp-foreground);
+}
+
+.bp-body {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-body-size);
+  line-height: var(--bp-body-leading);
+  color: var(--bp-foreground);
+}
+
+.bp-small {
+  font-family: var(--bp-font-sans);
+  font-size: var(--bp-small-size);
+  line-height: var(--bp-small-leading);
+  color: var(--bp-muted-foreground);
+}
+
+.bp-text-muted {
+  color: var(--bp-muted-foreground);
+}
+
+.bp-text-primary {
+  color: var(--bp-primary);
+}
+
+.bp-bg-muted {
+  background-color: var(--bp-muted);
+}
+
+.bp-border {
+  border-color: var(--bp-border);
+}
+
+.bp-bg-primary-700 {
+  background-color: var(--bp-primary-700);
+}
+
+.bp-text-error {
+  color: var(--bp-state-error);
+}
+
+.bp-bg-error-light {
+  background-color: var(--bp-state-error-bg);
+}
+
+.bp-text-success {
+  color: var(--bp-state-success);
+}
+
+.bp-bg-success-light {
+  background-color: var(--bp-state-success-bg);
+}
+
+/* Apple-style subtle shadows */
+.bp-shadow-sm {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.bp-shadow-md {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.bp-shadow-header {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline { --color-background: var(--bp-background); --color-foreground: var(--bp-foreground); --color-card: var(--bp-card); --color-card-foreground: var(--bp-card-foreground); --color-popover: var(--bp-popover); --color-popover-foreground: var(--bp-popover-foreground); --color-primary: var(--bp-primary); --color-primary-foreground: var(--bp-primary-foreground); --color-muted: var(--bp-muted); --color-muted-foreground: var(--bp-muted-foreground); --color-border: var(--bp-border); --color-input: var(--bp-input); --color-ring: var(--bp-ring); --radius-sm: var(--bp-radius-sm); --radius-md: var(--bp-radius-md); --radius-lg: var(--bp-radius-lg); }
+  @layer base { body { background: var(--bp-background); color: var(--bp-foreground); } }
+    </style>
+    <style id="semantic-token-fallback" data-dom-id="semantic-token-fallback">
+      .bg-background { background-color: var(--bp-background); } .text-background { color: var(--bp-background); } .border-background { border-color: var(--bp-background); }
+      .bg-foreground { background-color: var(--bp-foreground); } .text-foreground { color: var(--bp-foreground); } .border-foreground { border-color: var(--bp-foreground); }
+      .bg-card { background-color: var(--bp-card); } .text-card { color: var(--bp-card); } .border-card { border-color: var(--bp-card); }
+      .bg-primary { background-color: var(--bp-primary); } .text-primary { color: var(--bp-primary); } .border-primary { border-color: var(--bp-primary); }
+      .bg-primary-foreground { background-color: var(--bp-primary-foreground); } .text-primary-foreground { color: var(--bp-primary-foreground); }
+      .bg-muted { background-color: var(--bp-muted); } .text-muted { color: var(--bp-muted); } .border-muted { border-color: var(--bp-muted); }
+      .bg-muted-foreground { background-color: var(--bp-muted-foreground); } .text-muted-foreground { color: var(--bp-muted-foreground); }
+      .bg-border { background-color: var(--bp-border); } .text-border { color: var(--bp-border); } .border-border { border-color: var(--bp-border); }
+      .bg-input { background-color: var(--bp-input); } .text-input { color: var(--bp-input); } .border-input { border-color: var(--bp-input); }
+    </style>
+    <style>[data-icon]{display:inline-flex;align-items:center;justify-content:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;background-color:currentColor}</style>
+</head>
+<body class="min-h-screen font-sans antialiased bg-background text-foreground">
+  <header class="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl bp-shadow-header">
+    <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+      <a href="index.html" id="nav-logo" data-dom-id="nav-logo" class="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground"><i data-lucide="pen-tool" class="h-5 w-5 text-primary"></i><span>我的博客</span></a>
+      <nav class="flex items-center gap-6">
+        <a href="index.html" id="nav-home" data-dom-id="nav-home" class="text-sm font-medium text-foreground hover:text-primary transition-colors">首页</a>
+        <a href="categories.html" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">分类</a>
+        <a href="post-editor.html" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">写文章</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <a href="profile.html" id="nav-profile" data-dom-id="nav-profile" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">个人中心</a>
+        <a href="login.html" id="nav-login" data-dom-id="nav-login" class="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-bp-primary-700 transition-colors">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex flex-1 items-center justify-center py-16">
+    <div class="w-full max-w-md rounded-2xl border border-border bg-card p-8 bp-shadow-sm">
+      <div class="mb-6 text-center">
+        <h1 class="bp-title-2 mb-2">创建账号</h1>
+        <p class="bp-small text-muted-foreground">注册后即可发布和管理文章</p>
+      </div>
+      <form class="space-y-4" onsubmit="return false;">
+        <div class="space-y-2">
+          <label for="input-username" class="text-sm font-medium text-foreground">用户名</label>
+          <input id="input-username" data-dom-id="input-username" type="text" placeholder="请输入用户名" class="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring">
+        </div>
+        <div class="space-y-2">
+          <label for="input-email" class="text-sm font-medium text-foreground">邮箱</label>
+          <input id="input-email" data-dom-id="input-email" type="email" placeholder="请输入邮箱" class="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring">
+        </div>
+        <div class="space-y-2">
+          <label for="input-password" class="text-sm font-medium text-foreground">密码</label>
+          <input id="input-password" data-dom-id="input-password" type="password" placeholder="请输入密码" class="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring">
+        </div>
+        <button id="btn-register" data-dom-id="btn-register" type="submit" class="inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-bp-primary-700 transition-colors">注册</button>
+      </form>
+      <div class="mt-6 text-center text-sm text-muted-foreground">
+        已有账号？<a href="login.html" id="link-login" data-dom-id="link-login" class="font-medium text-primary hover:underline">立即登录</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-border py-8">
+    <div class="mx-auto max-w-5xl px-6 text-center text-sm text-muted-foreground"><p>个人博客原型 · 用于 Java Web 简历项目展示</p></div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+{
+  "data": [
+    {
+      "id": "page-index",
+      "title": "首页",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 480,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1415,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-85be2b4d",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/index.html",
+        "interactions": [
+          {
+            "domId": "post-link-demo",
+            "targetPageId": "page-post-detail",
+            "trigger": "click",
+            "label": "文章标题进入详情"
+          },
+          {
+            "domId": "btn-new-post",
+            "targetPageId": "page-post-editor",
+            "trigger": "click",
+            "label": "新建文章"
+          },
+          {
+            "domId": "nav-categories",
+            "targetPageId": "page-categories",
+            "trigger": "click",
+            "label": "顶部导航分类"
+          },
+          {
+            "domId": "nav-profile",
+            "targetPageId": "page-profile",
+            "trigger": "click",
+            "label": "顶部导航个人中心"
+          },
+          {
+            "domId": "nav-login",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "顶部导航登录"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-login",
+      "title": "登录",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 480,
+        "y": 1629,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-5c7bf62c",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/login.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "link-register",
+            "targetPageId": "page-register",
+            "trigger": "click",
+            "label": "去注册"
+          },
+          {
+            "domId": "nav-profile",
+            "targetPageId": "page-profile",
+            "trigger": "click",
+            "label": "个人中心"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-register",
+      "title": "注册",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 0,
+        "y": 499,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-7625e4fe",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/register.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "link-login",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "去登录"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-post-detail",
+      "title": "文章详情",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1382,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-3f1aff92",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/post-detail.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "btn-back-list",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "返回列表"
+          },
+          {
+            "domId": "btn-edit",
+            "targetPageId": "page-post-editor",
+            "trigger": "click",
+            "label": "编辑文章"
+          },
+          {
+            "domId": "nav-categories",
+            "targetPageId": "page-categories",
+            "trigger": "click",
+            "label": "顶部导航分类"
+          },
+          {
+            "domId": "nav-profile",
+            "targetPageId": "page-profile",
+            "trigger": "click",
+            "label": "顶部导航个人中心"
+          },
+          {
+            "domId": "nav-login",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "顶部导航登录"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-post-editor",
+      "title": "文章编辑",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 480,
+        "y": 510,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 923,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-d9c9fe42",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/post-editor.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "btn-cancel",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "取消返回列表"
+          },
+          {
+            "domId": "nav-categories",
+            "targetPageId": "page-categories",
+            "trigger": "click",
+            "label": "顶部导航分类"
+          },
+          {
+            "domId": "nav-profile",
+            "targetPageId": "page-profile",
+            "trigger": "click",
+            "label": "顶部导航个人中心"
+          },
+          {
+            "domId": "nav-login",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "顶部导航登录"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-categories",
+      "title": "分类管理",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 480,
+        "y": 883,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-235a3158",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/categories.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "nav-editor",
+            "targetPageId": "page-post-editor",
+            "trigger": "click",
+            "label": "顶部导航写文章"
+          },
+          {
+            "domId": "nav-profile",
+            "targetPageId": "page-profile",
+            "trigger": "click",
+            "label": "顶部导航个人中心"
+          },
+          {
+            "domId": "nav-login",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "顶部导航登录"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-profile",
+      "title": "个人中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1786782600000,
+      "canvasData": {
+        "x": 480,
+        "y": 1256,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-de315050",
+          "measuredAt": 1786806781297
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/profile.html",
+        "interactions": [
+          {
+            "domId": "nav-logo",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "Logo返回首页"
+          },
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-index",
+            "trigger": "click",
+            "label": "导航首页"
+          },
+          {
+            "domId": "btn-logout",
+            "targetPageId": "page-login",
+            "trigger": "click",
+            "label": "退出登录"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "projectName": "个人博客原型",
+    "designLibrary": null,
+    "visualEditorEnabled": false,
+    "showEdge": true
+  }
+}
