@@ -76,7 +76,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));  // 允许的域名
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));  // 允许的域名。todo 仅为开发环境配置
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));  // 允许的方法
         configuration.setAllowedHeaders(List.of("*"));  // 允许的头
         configuration.setAllowCredentials(true);  // 允许携带凭证
