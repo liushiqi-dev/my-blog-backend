@@ -48,15 +48,7 @@ public class PostController {
     @GetMapping("/{id}")
     public Result getPostDetail(@PathVariable Long id) {
         PostVo postVo = postService.getPostDetail(id);
-        log.info("获取已发布文章详情成功，文章ID：{}", postVo.getId());
-        return Result.success(postVo);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}/all")
-    public Result getPostDetailAll(@PathVariable Long id) {
-        PostVo postVo = postService.getPostDetailAll(id);
-        log.info("获取所有文章详情成功，文章ID：{}", postVo.getId());
+        log.info("获取文章详情成功，文章ID：{}", postVo.getId());
         return Result.success(postVo);
     }
 

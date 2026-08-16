@@ -57,17 +57,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostVo getPostDetail(Long id) {
-        PostVo postVo = postMapper.findById(id);
-        if(postVo==null||!postVo.getStatus().equals("PUBLISHED")){
-            throw new BusinessException("文章不存在");
-        }
-        return postVo;
-    }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
 
-    @Override
-    public PostVo getPostDetailAll(Long id) {
         PostVo postVo = postMapper.findById(id);
-        if(postVo==null){
+        if(postVo==null||(!isAdmin&&!postVo.getStatus().equals("PUBLISHED"))){
             throw new BusinessException("文章不存在");
         }
         return postVo;
