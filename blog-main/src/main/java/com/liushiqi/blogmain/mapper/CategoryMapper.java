@@ -14,7 +14,7 @@ public interface CategoryMapper {
 
     void insert(CategoryRequest req);
 
-    @Select("select c.name , count(p.category_id) total from categories c left join post_categories p on" +
+    @Select("select c.id, c.name , count(p.category_id) total from categories c left join post_categories p on" +
             "            p.category_id=c.id group by c.id;")
     List<CategoryVo> findAll();
 
