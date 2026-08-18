@@ -2,18 +2,21 @@ package com.liushiqi.blogmain.service.impl;
 
 import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.common.result.PageResult;
+import com.liushiqi.blogmain.common.util.RedisUtils;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.mapper.PostMapper;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 文章业务逻辑实现
@@ -24,6 +27,12 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -39,6 +48,8 @@ public class PostServiceImpl implements PostService {
         }
         postMapper.insert(authorId,req);
         postMapper.insertCategories(req.getId(),req.getCategoryIds());
+//        redisTemplate.delete(redisTemplate.keys("posts:*"));//O(N)查找所有Key会阻塞Redis
+        redisUtils.deleteByPattern("posts:*");//采用分批扫描，避免阻塞Redis
         return postMapper.findById(req.getId());
     }
 
@@ -52,6 +63,7 @@ public class PostServiceImpl implements PostService {
         postMapper.update(req);
         postMapper.deleteCategoriesByPostId(req.getId());
         postMapper.insertCategories(req.getId(),req.getCategoryIds());
+        redisUtils.deleteByPattern("posts:*");
         return postMapper.findById(req.getId());
     }
 
@@ -76,6 +88,7 @@ public class PostServiceImpl implements PostService {
             throw new BusinessException("文章不存在");
         }
         postMapper.deleteCategoriesByPostId(id);
+        redisUtils.deleteByPattern("posts:*");
     }
 
     @Override
@@ -90,8 +103,15 @@ public class PostServiceImpl implements PostService {
         if(!isAdmin){
             status="PUBLISHED";
         }
-        return new PageResult<>(
+        String key="posts:"+status+":"+page+":"+size;
+        Object cache = redisTemplate.opsForValue().get(key);
+        if(cache!=null){
+            return (PageResult) cache;
+        }
+        PageResult result = new PageResult<>(
                 postMapper.findPage(offset,size,status),
                 postMapper.getTotal(status),page,size);
+        redisUtils.setWithRandomTtl(key, result, 30, 5, TimeUnit.MINUTES);
+        return result;
     }
 }
