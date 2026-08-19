@@ -41,6 +41,15 @@
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>4.0.1</version>
         </dependency>
+        <!-- Flyway 数据库版本管理 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
         <!-- MySQL 依赖 -->
         <dependency>
             <groupId>com.mysql</groupId>
