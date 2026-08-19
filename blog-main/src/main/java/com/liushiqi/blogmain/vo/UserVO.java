@@ -14,4 +14,6 @@ public class UserVO {//fixme:末尾为VO Vo待商榷
     private String username;
     private String role;
     private String email;
+    private Long totalLikes;
+    private Long totalViews;
 }

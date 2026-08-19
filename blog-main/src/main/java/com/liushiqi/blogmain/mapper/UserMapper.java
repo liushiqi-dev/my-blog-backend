@@ -1,6 +1,7 @@
 package com.liushiqi.blogmain.mapper;
 
 import com.liushiqi.blogmain.entity.Users;
+import com.liushiqi.blogmain.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -18,6 +19,6 @@ public interface UserMapper {
 
     void insert(Users user);
 
-    @Select("select username, role, email from users where id=#{id}")
-    Users findById(Long id);
+    @Select("select username, role, email ,total_likes,total_views from users where id=#{id}")
+    UserVO findById(Long id);
 }
