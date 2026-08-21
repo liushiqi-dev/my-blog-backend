@@ -2,12 +2,16 @@ package com.liushiqi.blogmain.service.impl;
 
 import com.liushiqi.blogmain.common.exception.BusinessException;
 import com.liushiqi.blogmain.common.result.PageResult;
+import com.liushiqi.blogmain.common.util.LikeRedisScript;
 import com.liushiqi.blogmain.common.util.RedisUtils;
+import com.liushiqi.blogmain.config.RabbitMQConfig;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.mapper.PostMapper;
+import com.liushiqi.blogmain.mq.LikeMessage;
 import com.liushiqi.blogmain.service.PostService;
 import com.liushiqi.blogmain.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -33,6 +37,12 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private LikeRedisScript likeRedisScript;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -114,4 +124,37 @@ public class PostServiceImpl implements PostService {
         redisUtils.setWithRandomTtl(key, result, 30, 5, TimeUnit.MINUTES);
         return result;
     }
+
+    @Override
+    public void toggleLike(Long id) {
+        Long userId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        if (userId == null) {
+            throw new BusinessException("");
+        }
+        // Redis先行，Lua原子切换点赞状态（返回1点赞 0取消）
+        Long liked = likeRedisScript.toggleLike(id, userId);
+        // 发送消息至MQ，由消费者异步写入数据库（削峰+解耦）
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.LIKE_EXCHANGE,
+                RabbitMQConfig.LIKE_ROUTING_KEY,
+                new LikeMessage(id, userId, liked.intValue()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void syncLikeToDb(LikeMessage message) {
+        if (message.getLiked() == 1) {
+            // insert ignore：重复消息返回0，此时不累加计数，保证幂等
+            int rows = postMapper.insertLike(message.getPostId(), message.getUserId());
+            if (rows > 0) {
+                postMapper.updateLikeCount(message.getPostId(), 1);
+            }
+        } else {
+            int rows = postMapper.deleteLike(message.getPostId(), message.getUserId());
+            if (rows > 0) {
+                postMapper.updateLikeCount(message.getPostId(), -1);
+            }
+        }
+    }
+
 }

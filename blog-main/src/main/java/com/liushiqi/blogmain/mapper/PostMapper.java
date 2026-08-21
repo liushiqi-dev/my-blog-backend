@@ -3,6 +3,8 @@ package com.liushiqi.blogmain.mapper;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.vo.PageVo;
 import com.liushiqi.blogmain.vo.PostVo;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -53,4 +55,22 @@ public interface PostMapper {
     Integer getTotal(String status);
 
     List<PageVo> findPage(Integer page, Integer size, String status);
+
+    /**
+     * 插入点赞记录（insert ignore：记录已存在时忽略并返回0）
+     */
+    @Insert("insert ignore into post_likes (post_id, user_id) values (#{postId}, #{userId})")
+    int insertLike(Long postId, Long userId);
+
+    /**
+     * 删除点赞记录（记录不存在时返回0）
+     */
+    @Delete("delete from post_likes where post_id = #{postId} and user_id = #{userId}")
+    int deleteLike(Long postId, Long userId);
+
+    /**
+     * 更新文章点赞数（delta为增量：点赞+1 取消-1）
+     */
+    @Update("update posts set like_count = like_count + #{delta} where id = #{postId}")
+    void updateLikeCount(Long postId, int delta);
 }
