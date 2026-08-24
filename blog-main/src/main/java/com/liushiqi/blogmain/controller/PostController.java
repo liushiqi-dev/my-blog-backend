@@ -70,4 +70,10 @@ public class PostController {
         log.info("获取文章列表，分页参数：page={}, size={}, status={}", page, size, status);
         return Result.success(postService.listPosts(page,size,status));
     }
+
+    @PatchMapping("/{id}/like")
+    public Result toggleLike(@PathVariable Long id) {
+        postService.toggleLike(id);
+        return Result.success();
+    }
 }

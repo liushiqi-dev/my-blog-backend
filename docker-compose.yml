@@ -1,0 +1,53 @@
+services:            # 要跑的每个容器
+  mysql:             # 服务名（compose 内部互访时用的名字，后面容器网络会用到）
+    image: mysql:8.0        # 用哪个镜像、哪个版本
+    container_name: blog-mysql   # 容器的显示名（docker ps 里看到的）
+    environment:            # 传给容器内进程的环境变量，MySQL 镜像约定：
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}   # 真实密码在 .env（compose 自动读取同目录 .env）
+      MYSQL_DATABASE: blog          # 初始化时顺手建一个空库
+    ports:
+      - "3306:3306"         # 宿主机端口:容器端口（你后端连 localhost:3306）
+    volumes:
+      - mysql-data:/var/lib/mysql   # 数据持久化：容器删了数据还在
+
+  redis:
+    image: redis:7
+    container_name: blog-redis
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]  # 密码从 .env 注入
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management   # -management 后缀 = 带网页管理台
+    container_name: blog-rabbitmq
+    ports:
+      - "5672:5672"      # AMQP 协议端口（后端用这个）
+      - "15672:15672"    # 管理台网页（浏览器用这个）
+
+  backend:
+    build: ./blog-main
+    container_name: blog-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      # 以下密码从 .env 透传给容器，Spring 在 application-docker.yaml 中用 ${} 读取
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+
+  frontend:
+    build: ./blog-frontend-dist
+    container_name: blog-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:         # 声明上面用到的具名卷（Docker 托理的一块存储空间）

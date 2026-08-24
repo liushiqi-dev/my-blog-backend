@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO getUserInfo() {
         Long userId = (Long) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
-        Users user = userMapper.findById(userId);
-        return new UserVO(user.getUsername(), user.getRole(), user.getEmail());
+        return userMapper.findById(userId);
     }
 }
