@@ -92,6 +92,17 @@ public class PostServiceImpl implements PostService {
         Long pendingViews = redisTemplate.opsForValue().increment("post:views:" + id);
         // MySQL 里是上次同步后的旧值，补上 Redis 中尚未同步的增量，返回实时浏览量
         postVo.setViewCount(postVo.getViewCount() + pendingViews.intValue());
+
+        // 点赞数：优先取 Redis 当前值（Lua 每按一次对 post:likeCount:{id} 做+1/-1，是瞬时量），
+        // 无 key（尚未点过）才用 DB 旧值；MQ 异步落库后 DB 会追上来，最终一致
+        Integer likeCount = (Integer) redisTemplate.opsForValue().get("post:likeCount:" + id);
+        postVo.setLikeCount(likeCount != null ? likeCount : postVo.getLikeCount());
+
+        // 当前用户是否已点赞：查 Redis 点赞集合（未登录/匿名用户默认为未点赞）
+        Object principal = auth == null ? null : auth.getPrincipal();
+        Long userId = (principal instanceof Number) ? ((Number) principal).longValue() : null;
+        postVo.setLiked(userId != null &&
+                Boolean.TRUE.equals(redisTemplate.opsForSet().isMember("post:likes:" + id, userId.toString())));
         return postVo;
     }
 
