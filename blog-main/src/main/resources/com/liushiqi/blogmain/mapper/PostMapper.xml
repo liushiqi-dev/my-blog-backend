@@ -44,7 +44,7 @@
 
     <!--获取文章分页列表 -->
     <select id="findPage" resultType="com.liushiqi.blogmain.vo.PageVo">
-        select p.id,p.title,p.summary,u.username authorName,p.status,p.create_time from posts p
+        select p.id,p.title,p.summary,u.username authorName,p.status,p.create_time,p.view_count from posts p
             join users u on author_id=u.id
         <where>
         p.is_deleted=0

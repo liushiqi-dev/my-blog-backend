@@ -40,7 +40,7 @@ public interface PostMapper {
      */
     @Select("select p.id,p.title,p.summary,p.content,users.username authorName," +
             "       group_concat(categories.name) categoryNames" +
-            "       ,p.status,p.create_time,p.update_time" +
+            "       ,p.status,p.create_time,p.update_time,p.view_count,p.like_count" +
             "            from posts p" +
             "            inner join users on users.id=p.author_id" +
             "            inner join post_categories on p.id = post_categories.post_id" +
@@ -73,4 +73,10 @@ public interface PostMapper {
      */
     @Update("update posts set like_count = like_count + #{delta} where id = #{postId}")
     void updateLikeCount(Long postId, int delta);
+
+    /**
+     * 更新文章浏览量（delta为定时任务从Redis取回的累计增量）
+     */
+    @Update("update posts set view_count = view_count + #{delta} where id = #{postId}")
+    void updateViewCount(Long postId, int delta);
 }

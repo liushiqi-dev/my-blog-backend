@@ -12,5 +12,6 @@ public class PageVo {
     private String title;
     private String summary;
     private String status;
+    private Integer viewCount;
     private LocalDateTime createTime;
 }

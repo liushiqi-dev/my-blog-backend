@@ -20,6 +20,8 @@ public class PostVo {
     private String summary;
     private String status;
     private String categoryNames;
+    /** 浏览量（Redis 实时累计，定时任务异步落库） */
+    private Integer viewCount;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

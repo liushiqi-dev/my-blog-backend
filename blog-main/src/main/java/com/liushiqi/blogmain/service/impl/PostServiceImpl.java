@@ -87,6 +87,11 @@ public class PostServiceImpl implements PostService {
         if(postVo==null||(!isAdmin&&!postVo.getStatus().equals("PUBLISHED"))){
             throw new BusinessException("文章不存在");
         }
+        // 浏览量+1：INCR 原子自增，只写 Redis 不碰 MySQL（高频写转移给 Redis）
+        // 落库交给 ViewCountSyncTask 定时任务批量完成
+        Long pendingViews = redisTemplate.opsForValue().increment("post:views:" + id);
+        // MySQL 里是上次同步后的旧值，补上 Redis 中尚未同步的增量，返回实时浏览量
+        postVo.setViewCount(postVo.getViewCount() + pendingViews.intValue());
         return postVo;
     }
 
