@@ -69,6 +69,13 @@ public interface PostMapper {
     int deleteLike(Long postId, Long userId);
 
     /**
+     * 查询用户是否点赞过文章（Redis 故障降级时兜底）
+     * @return 大于0表示已点赞
+     */
+    @Select("select count(*) from post_likes where post_id = #{postId} and user_id = #{userId}")
+    int countLike(Long postId, Long userId);
+
+    /**
      * 更新文章点赞数（delta为增量：点赞+1 取消-1）
      */
     @Update("update posts set like_count = like_count + #{delta} where id = #{postId}")

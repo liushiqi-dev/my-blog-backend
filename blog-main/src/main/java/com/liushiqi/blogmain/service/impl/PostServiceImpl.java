@@ -13,6 +13,7 @@ import com.liushiqi.blogmain.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,22 +88,33 @@ public class PostServiceImpl implements PostService {
         if(postVo==null||(!isAdmin&&!postVo.getStatus().equals("PUBLISHED"))){
             throw new BusinessException("文章不存在");
         }
-        // 浏览量+1：INCR 原子自增，只写 Redis 不碰 MySQL（高频写转移给 Redis）
-        // 落库交给 ViewCountSyncTask 定时任务批量完成
-        Long pendingViews = redisTemplate.opsForValue().increment("post:views:" + id);
-        // MySQL 里是上次同步后的旧值，补上 Redis 中尚未同步的增量，返回实时浏览量
-        postVo.setViewCount(postVo.getViewCount() + pendingViews.intValue());
-
-        // 点赞数：优先取 Redis 当前值（Lua 每按一次对 post:likeCount:{id} 做+1/-1，是瞬时量），
-        // 无 key（尚未点过）才用 DB 旧值；MQ 异步落库后 DB 会追上来，最终一致
-        Integer likeCount = (Integer) redisTemplate.opsForValue().get("post:likeCount:" + id);
-        postVo.setLikeCount(likeCount != null ? likeCount : postVo.getLikeCount());
-
-        // 当前用户是否已点赞：查 Redis 点赞集合（未登录/匿名用户默认为未点赞）
+        // 未登录/匿名用户不碰 Redis 也不查库，默认未点赞；userId 同时供降级分支复用
         Object principal = auth == null ? null : auth.getPrincipal();
         Long userId = (principal instanceof Number) ? ((Number) principal).longValue() : null;
-        postVo.setLiked(userId != null &&
-                Boolean.TRUE.equals(redisTemplate.opsForSet().isMember("post:likes:" + id, userId.toString())));
+
+        // 三处 Redis 调用统一降级：key 不存在走各自原有兜底；Redis 连不上/超时抛异常时
+        // 拦截后沿用 findById 查出的 DB 旧值返回，避免整个详情接口 500
+        try {
+            // 浏览量+1：INCR 原子自增，只写 Redis 不碰 MySQL（高频写转移给 Redis）
+            // 落库交给 ViewCountSyncTask 定时任务批量完成
+            Long pendingViews = redisTemplate.opsForValue().increment("post:views:" + id);
+            // MySQL 里是上次同步后的旧值，补上 Redis 中尚未同步的增量，返回实时浏览量
+            postVo.setViewCount(postVo.getViewCount() + pendingViews.intValue());
+
+            // 点赞数：优先取 Redis 当前值（Lua 每按一次对 post:likeCount:{id} 做+1/-1，是瞬时量），
+            // 无 key（尚未点过）才用 DB 旧值；MQ 异步落库后 DB 会追上来，最终一致
+            Integer likeCount = (Integer) redisTemplate.opsForValue().get("post:likeCount:" + id);
+            postVo.setLikeCount(likeCount != null ? likeCount : postVo.getLikeCount());
+
+            // 当前用户是否已点赞：查 Redis 点赞集合
+            postVo.setLiked(userId != null &&
+                    Boolean.TRUE.equals(redisTemplate.opsForSet().isMember("post:likes:" + id, userId.toString())));
+        } catch (DataAccessException e) {
+            // Redis 故障降级：浏览/点赞数不重查，postVo 里已是 findById 的 DB 旧值；
+            // 已点赞状态改查 post_likes 表兜底（MQ 异步落库最终一致，降级瞬间刚点的赞可能短暂查不到）
+            log.warn("Redis不可用，浏览/点赞数回显DB旧值，已点赞状态查库兜底, postId={}", id, e);
+            postVo.setLiked(userId != null && postMapper.countLike(id, userId) > 0);
+        }
         return postVo;
     }
 
