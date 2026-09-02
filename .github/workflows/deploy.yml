@@ -1,0 +1,55 @@
+name: Deploy to Server
+
+# 触发条件：push 到 main 分支时自动运行
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 把仓库代码拉到 GitHub 云机器
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ============ 后端 ============
+      # 2. 装 JDK 17（后端编译需要）
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # 3. 用 Maven Wrapper 打包后端 jar（跳过测试加快速度）
+      - name: Build backend jar
+        run: |
+          cd blog-main
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
+
+      # ============ 登录 ACR ============
+      # 5. 用 Secrets 里的账号密码登录阿里云镜像仓库
+      - name: Login to ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username "${{ secrets.ACR_USERNAME }}" --password-stdin ${{ secrets.ACR_REGISTRY }}
+
+      # ============ 构建并推送镜像 ============
+      # 6. 后端镜像：基于刚打出的 jar
+      - name: Build & push backend image
+        run: |
+          docker build -t ${{ secrets.ACR_REGISTRY }}/blog-lsq/blog-backend:latest ./blog-main
+          docker push ${{ secrets.ACR_REGISTRY }}/blog-lsq/blog-backend:latest
+
+      # ============ 部署到服务器 ============
+      # 8. 通过 SSH 登录服务器，拉新镜像并重启（服务器不参与构建）
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 47.94.95.8
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/my-blog-backend
+            docker compose pull backend
+            docker compose up -d backend
