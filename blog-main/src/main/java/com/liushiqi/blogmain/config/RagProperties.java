@@ -59,6 +59,9 @@ public class RagProperties {
     /** 单次 embedding 请求携带的文本条数，取保守值 10，避免超出网关限制。 */
     private int embeddingBatchSize;
 
+    /** embedding 调用在网关偶发连接重置/空响应时的重试次数（不含首次尝试）。 */
+    private int embeddingMaxRetries = 2;
+
     /** chat（答案生成）模型名称，此处为 deepseek-v4-flash（旧名 deepseek-chat 已停用，切勿回退）。 */
     private String chatModel;
 

@@ -293,6 +293,13 @@ public class KbServiceImpl implements KbService {
         }
 
         String answer = llmClient.chat(SYSTEM_PROMPT, context.append("问题：").append(question).toString());
+        // 模型按 system 提示词判定资料不足时会回降级话术，此时 KNN 召回的分块与问题并不相关
+        // （topK 无相似度阈值，总返回 k 条最近邻），继续当作引用来源返回会让用户误以为答案有出处，
+        // 故与降级话术一并清空 sources。
+        if (isFallbackAnswer(answer)) {
+            log.info("模型判定资料不足，返回降级答案且不附带引用来源");
+            return new AskVo(FALLBACK_ANSWER, List.of());
+        }
         List<AskVo.Source> sources = new ArrayList<>();
         titleByPostId.forEach((postId, title) -> {
             // 标题取不到说明文章已删除或无分类关联，不作为可点击来源返回
@@ -301,6 +308,28 @@ public class KbServiceImpl implements KbService {
             }
         });
         return new AskVo(answer, sources);
+    }
+
+    /**
+     * 判断模型是否回了降级话术：去掉空白与中英文标点后，以 {@link #FALLBACK_ANSWER} 开头且未显著展开。
+     * <p>
+     * 模型实际返回常带句号（“根据现有博客内容无法回答。”），故不能直接 equals；长度上限用于排除
+     * “无法回答…但关于 X 部分…”这类其实给出了实质内容的回复，避免误清掉有效来源。
+     */
+    private static boolean isFallbackAnswer(String answer) {
+        if (answer == null) {
+            return false;
+        }
+        String normalized = stripPunct(answer);
+        String fallback = stripPunct(FALLBACK_ANSWER);
+        return normalized.startsWith(fallback) && normalized.length() <= fallback.length() * 2;
+    }
+
+    /**
+     * 剔除空白与常见中英文标点，用于降级话术的宽松比对。
+     */
+    private static String stripPunct(String text) {
+        return text.replaceAll("[\\s。，、；：！？「」『』（）《》.,;:!?()\\[\\]\"']", "");
     }
 
     /**

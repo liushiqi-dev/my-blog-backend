@@ -31,6 +31,9 @@ public class LlmClient {
     /** 记录失败响应体片段的最大长度，避免超长响应刷爆日志。 */
     private static final int SNIPPET_LIMIT = 200;
 
+    /** 重试前的退避基数（毫秒），按尝试次数线性递增，给网关从偶发连接重置中恢复的时间。 */
+    private static final long RETRY_BACKOFF_MS = 500;
+
     private final RestClient embeddingRestClient;
     private final RestClient chatRestClient;
     private final RagProperties props;
@@ -75,7 +78,7 @@ public class LlmClient {
     private List<float[]> embedBatch(List<String> batch) {
         EmbeddingRequest request = new EmbeddingRequest(
                 props.getEmbeddingModel(), batch, props.getEmbeddingDimension(), "float");
-        int maxAttempts = 2;
+        int maxAttempts = Math.max(1, props.getEmbeddingMaxRetries() + 1);
         RuntimeException last = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
@@ -90,10 +93,14 @@ public class LlmClient {
                 last = e;
                 log.warn("embedding 调用失败 HTTP {}（第 {}/{} 次），响应片段: {}",
                         e.getStatusCode().value(), attempt, maxAttempts, snippet(e.getResponseBodyAsString()));
+                if (isNonRetryable(e)) {
+                    break;
+                }
             } catch (RestClientException e) {
                 last = e;
                 log.warn("embedding 调用异常（第 {}/{} 次）: {}", attempt, maxAttempts, e.getMessage());
             }
+            backoff(attempt, maxAttempts);
         }
         throw new BusinessException("embedding 调用失败: " + describe(last), last);
     }
@@ -161,10 +168,14 @@ public class LlmClient {
                 last = e;
                 log.warn("chat 调用失败 HTTP {}（第 {}/{} 次），响应片段: {}",
                         e.getStatusCode().value(), attempt, maxAttempts, snippet(e.getResponseBodyAsString()));
+                if (isNonRetryable(e)) {
+                    break;
+                }
             } catch (RestClientException e) {
                 last = e;
                 log.warn("chat 调用异常（第 {}/{} 次）: {}", attempt, maxAttempts, e.getMessage());
             }
+            backoff(attempt, maxAttempts);
         }
         throw new BusinessException("chat 调用失败: " + describe(last), last);
     }
@@ -192,6 +203,29 @@ public class LlmClient {
         }
         ChatChoice choice = response.choices().get(0);
         return choice == null ? null : choice.finishReason();
+    }
+
+    /**
+     * 重试前线性退避；已是最后一次尝试则不再等待，避免白白拖长失败响应。
+     */
+    private void backoff(int attempt, int maxAttempts) {
+        if (attempt >= maxAttempts) {
+            return;
+        }
+        try {
+            Thread.sleep(RETRY_BACKOFF_MS * attempt);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * 4xx（429 限流除外）是请求本身的问题——鉴权失败、模型名不存在、参数非法，
+     * 重试只会白等一轮再报同样的错，故直接失败；5xx 与连接异常才是网关偶发故障，值得重试。
+     */
+    private static boolean isNonRetryable(RestClientResponseException e) {
+        int status = e.getStatusCode().value();
+        return status >= 400 && status < 500 && status != 429;
     }
 
     /**

@@ -46,6 +46,7 @@ public class RedisVectorStore implements VectorSearcher {
     @Override
     public void ensureIndex() {
         int dim = props.getEmbeddingDimension();
+        dropIfDimensionChanged(dim);
         try {
             dispatch("FT.CREATE",
                     b(INDEX_NAME),
@@ -64,6 +65,41 @@ public class RedisVectorStore implements VectorSearcher {
                 return;
             }
             throw e;
+        }
+    }
+
+    /**
+     * 索引已存在但 DIM 与当前配置不一致时，连同旧向量文档一并删除，交由随后的 FT.CREATE 按新维度重建。
+     * <p>
+     * 更换 embedding 模型或调整 rag.embedding-dimension 后必然出现这种不一致，而 FT.CREATE 对已存在的
+     * 索引只会报 already exists，若在此静默跳过，旧维度索引会一直留着，每次 KNN 查询都报
+     * SEARCH_QUERY_BAD（blob 字节数 ≠ DIM×4）。旧向量也没有保留价值：维度对不上，且不同模型的向量空间
+     * 互不相通，即便维度凑巧相同也不能复用，因此用 DD 连文档一起删。
+     * <p>
+     * 只删索引不删文档是不够的——新索引建立后会立即去索引那些残留的异维度 blob，
+     * hash_indexing_failures 会涨到全部文档数。kb_chunk 表才是事实源，删完后调 /kb/reindex 即可回填。
+     */
+    private void dropIfDimensionChanged(int expectedDim) {
+        Integer actualDim = currentIndexDim();
+        if (actualDim == null || actualDim == expectedDim) {
+            return;
+        }
+        log.warn("向量索引 {} 现有 DIM={} 与配置 {} 不一致，已连同旧向量文档删除并按新维度重建；"
+                + "需重新调用 /kb/reindex 用当前模型回填向量", INDEX_NAME, actualDim, expectedDim);
+        dispatch("FT.DROPINDEX", b(INDEX_NAME), b("DD"));
+    }
+
+    /**
+     * 读取现有索引的向量维度；索引不存在时 FT.INFO 报错，按 null 处理（走正常创建分支）。
+     */
+    private Integer currentIndexDim() {
+        try {
+            Object value = findValueDeep(dispatchNested("FT.INFO", b(INDEX_NAME)), "dim");
+            Long dim = value == null ? null : parseLongSafe(asString(value));
+            return dim == null ? null : dim.intValue();
+        } catch (Exception e) {
+            log.debug("读取 {} 维度失败，视为索引不存在: {}", INDEX_NAME, e.getMessage());
+            return null;
         }
     }
 
@@ -305,6 +341,30 @@ public class RedisVectorStore implements VectorSearcher {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * 在 FT.INFO 的嵌套回复中深度优先查找指定 key 的后继值，找不到返回 null。
+     * <p>
+     * 与 {@link #valueAt} 的区别：dim 位于 attributes 段的子数组内而非顶层，必须递归下钻；
+     * 且子数组的 key/value 未必从偶数位起对齐，故逐位扫描而非按步长 2 跳跃。
+     */
+    private static Object findValueDeep(Object node, String key) {
+        if (!(node instanceof List<?> rows)) {
+            return null;
+        }
+        for (int i = 0; i + 1 < rows.size(); i++) {
+            if (key.equals(asString(rows.get(i)))) {
+                return rows.get(i + 1);
+            }
+        }
+        for (Object child : rows) {
+            Object found = findValueDeep(child, key);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
     }
 
     /**

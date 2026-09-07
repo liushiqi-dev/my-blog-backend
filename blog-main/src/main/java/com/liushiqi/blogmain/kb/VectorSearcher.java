@@ -11,7 +11,10 @@ import java.util.List;
 public interface VectorSearcher {
 
     /**
-     * 确保 kb_idx 索引存在；已存在时不重复创建（幂等），供应用启动与重建流程调用。
+     * 确保 kb_idx 索引存在且维度与 rag.embedding-dimension 一致，供应用启动与重建流程调用。
+     * <p>
+     * 幂等：维度一致时不重复创建。维度不一致时（换 embedding 模型或调过维度）会连同旧向量文档
+     * 一并删除并按新维度重建，此时索引为空，需调 /kb/reindex 从 kb_chunk 事实源回填。
      */
     void ensureIndex();
 
