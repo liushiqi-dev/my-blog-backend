@@ -34,6 +34,7 @@ services:            # 要跑的每个容器
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
       - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}   # 阿里云百炼 API key，RAG 问答接口调用 DashScope 用
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}     # DeepSeek API key，RAG 问答生成（chat 补全）调用 DeepSeek 用
     depends_on:
       - mysql
       - redis

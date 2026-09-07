@@ -11,6 +11,7 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}   # 从容器环境变量读取
       database: 0  # 默认使用0号数据库，Redis有0-15共16个库
+      timeout: 2s   # 命令读写超时，防止 Redis 不可用时请求线程无限阻塞
 
   rabbitmq:
     host: rabbitmq
@@ -33,3 +34,23 @@ jwt:
   public-key: ${JWT_PUBLIC_KEY}
   # Token过期时间（毫秒），默认7天
   expiration: 604800000
+
+# RAG 知识库问答配置（双供应商：embedding 走阿里云百炼，chat 生成走 DeepSeek，均为 OpenAI 兼容接口）
+rag:
+  embedding:
+    base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    api-key: ${DASHSCOPE_API_KEY:}        # 默认空串，未配置时应用仍可启动，仅 /kb 接口报错
+    model: text-embedding-v4
+    dimension: 1024                        # 单一配置源：建库/查询/FT.CREATE DIM 必须一致
+    batch-size: 10                         # 官方硬上限：单次请求最多 10 条文本
+  chat:
+    base-url: https://api.deepseek.com
+    api-key: ${DEEPSEEK_API_KEY:}
+    model: deepseek-v4-flash
+    max-tokens: 800                        # 限制输出长度，控制成本与延迟
+  top-k: 5                                 # KNN 检索返回的候选分块数
+  chunk-size: 500                          # 文章分块长度（字符）
+  chunk-overlap: 50                        # 相邻分块重叠（字符），保留上下文
+  connect-timeout-ms: 3000
+  embedding-read-timeout-ms: 15000
+  chat-read-timeout-ms: 30000              # LLM 生成慢，读超时须显著大于连接超时
