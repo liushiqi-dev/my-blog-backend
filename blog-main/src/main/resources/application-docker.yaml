@@ -37,12 +37,12 @@ jwt:
 
 # RAG 知识库问答配置（统一走中转站单一 OpenAI 兼容端点：一个 base-url + 一个 key 同时提供 embedding 与 chat）
 rag:
-  base-url: ${LLM_BASE_URL:https://api.openai.com/v1}   # 中转站地址，.env 填真实值；默认值仅保证未配置时能启动
-  api-key: ${LLM_API_KEY:}                # 中转站统一 key；空默认值：未配置时博客主站照常启动，仅 /kb 链路调用时报错
-  embedding-model: text-embedding-3-small # 向量模型；中转站若用其它型号（如 bge-m3）改这一行与下面维度
-  embedding-dimension: 1536               # 向量维度：建库/查询/FT.CREATE DIM 必须一致
+  base-url: ${LLM_BASE_URL:}              # OpenAI 兼容端点，由服务器 .env 注入；空默认值：未配置也能启动，仅 /kb 链路报错
+  api-key: ${LLM_API_KEY:}                # 统一 key；空默认值：未配置时博客主站照常启动，仅 /kb 链路调用时报错
+  embedding-model: qwen3.7-text-embedding # 向量模型，须与端点实际可用型号一致；换型号必须同步改下面维度并重建索引
+  embedding-dimension: 1024               # 向量维度：模型输出 / FT.CREATE DIM / kb_chunk blob 字节数÷4 三方必须一致
   embedding-batch-size: 10                # 单次 embedding 请求文本条数（保守值）
-  chat-model: deepseek-v4-flash           # 生成模型（旧名 deepseek-chat 已停用）
+  chat-model: deepseek-v4-flash-0731      # 生成模型（旧名 deepseek-v4-flash / deepseek-chat 已停用）
   chat-max-tokens: 1200                   # 限制输出长度，控成本与延迟
   chat-max-retries: 2                     # 网关偶发连接重置/空响应时的重试次数
   top-k: 5
