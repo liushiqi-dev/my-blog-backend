@@ -43,10 +43,11 @@ rag:
   embedding-dimension: 1536               # 向量维度：建库/查询/FT.CREATE DIM 必须一致
   embedding-batch-size: 10                # 单次 embedding 请求文本条数（保守值）
   chat-model: deepseek-v4-flash           # 生成模型（旧名 deepseek-chat 已停用）
-  chat-max-tokens: 800                    # 限制输出长度，控成本与延迟
+  chat-max-tokens: 1200                   # 限制输出长度，控成本与延迟
+  chat-max-retries: 2                     # 网关偶发连接重置/空响应时的重试次数
   top-k: 5
   chunk-size: 500
   chunk-overlap: 50
   connect-timeout-ms: 3000
   embedding-read-timeout-ms: 15000
-  chat-read-timeout-ms: 30000
+  chat-read-timeout-ms: 60000

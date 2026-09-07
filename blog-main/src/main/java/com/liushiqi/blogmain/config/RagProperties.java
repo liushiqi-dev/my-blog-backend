@@ -65,6 +65,9 @@ public class RagProperties {
     /** 单次生成的最大 token 数，用于控制输出长度、成本与延迟。 */
     private int chatMaxTokens;
 
+    /** chat 调用在网关偶发连接重置或空响应时的重试次数。 */
+    private int chatMaxRetries = 2;
+
     /** KNN 向量检索返回的候选分块数量，越大召回越全但噪声与耗时也越多。 */
     private int topK = 5;
 
