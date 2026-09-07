@@ -35,22 +35,18 @@ jwt:
   # Token过期时间（毫秒），默认7天
   expiration: 604800000
 
-# RAG 知识库问答配置（双供应商：embedding 走阿里云百炼，chat 生成走 DeepSeek，均为 OpenAI 兼容接口）
+# RAG 知识库问答配置（统一走中转站单一 OpenAI 兼容端点：一个 base-url + 一个 key 同时提供 embedding 与 chat）
 rag:
-  embedding:
-    base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    api-key: ${DASHSCOPE_API_KEY:}        # 默认空串，未配置时应用仍可启动，仅 /kb 接口报错
-    model: text-embedding-v4
-    dimension: 1024                        # 单一配置源：建库/查询/FT.CREATE DIM 必须一致
-    batch-size: 10                         # 官方硬上限：单次请求最多 10 条文本
-  chat:
-    base-url: https://api.deepseek.com
-    api-key: ${DEEPSEEK_API_KEY:}
-    model: deepseek-v4-flash
-    max-tokens: 800                        # 限制输出长度，控制成本与延迟
-  top-k: 5                                 # KNN 检索返回的候选分块数
-  chunk-size: 500                          # 文章分块长度（字符）
-  chunk-overlap: 50                        # 相邻分块重叠（字符），保留上下文
+  base-url: ${LLM_BASE_URL:https://api.openai.com/v1}   # 中转站地址，.env 填真实值；默认值仅保证未配置时能启动
+  api-key: ${LLM_API_KEY:}                # 中转站统一 key；空默认值：未配置时博客主站照常启动，仅 /kb 链路调用时报错
+  embedding-model: text-embedding-3-small # 向量模型；中转站若用其它型号（如 bge-m3）改这一行与下面维度
+  embedding-dimension: 1536               # 向量维度：建库/查询/FT.CREATE DIM 必须一致
+  embedding-batch-size: 10                # 单次 embedding 请求文本条数（保守值）
+  chat-model: deepseek-v4-flash           # 生成模型（旧名 deepseek-chat 已停用）
+  chat-max-tokens: 800                    # 限制输出长度，控成本与延迟
+  top-k: 5
+  chunk-size: 500
+  chunk-overlap: 50
   connect-timeout-ms: 3000
   embedding-read-timeout-ms: 15000
-  chat-read-timeout-ms: 30000              # LLM 生成慢，读超时须显著大于连接超时
+  chat-read-timeout-ms: 30000

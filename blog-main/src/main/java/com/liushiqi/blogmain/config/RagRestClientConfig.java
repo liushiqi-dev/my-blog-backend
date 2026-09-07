@@ -18,11 +18,12 @@ import java.time.Duration;
  *    注册进 Spring 容器（这样就不用去改启动类 BlogMainApplication，侵入最小）。
  * 2. 声明两个 {@link RestClient} Bean：embeddingRestClient（向量化）与 chatRestClient（答案生成）。
  * <p>
- * 🔧 为什么要拆成两个 Client，而不是共用一个？
- * - 供应商不同：embedding 走阿里云百炼 DashScope，chat 走 DeepSeek，base-url 与 API key 都不一样。
- * - 超时不同：向量化是「一进一出」的短请求，15s 足够；而 LLM 生成是逐 token 吐字的慢请求，
+ * 🔧 为什么拆成两个 Client，但它们又指向同一个地址？
+ * - 同一个中转站：embedding 与 chat 都走同一个 OpenAI 兼容网关，base-url 与 API key 完全一致，
+ *   都取自 {@link RagProperties} 的 baseUrl / apiKey，不再区分供应商。
+ * - 仅仅因为超时不同：向量化是「一进一出」的短请求，15s 足够；而 LLM 生成是逐 token 吐字的慢请求，
  *   读超时必须放大到 30s，否则长回答会被中途掐断。两者若共用一套超时，要么 embedding 等太久、
- *   要么 chat 被误杀，所以必须分开配置。
+ *   要么 chat 被误杀，所以拆成两个只「读超时不同」的 Client（connectTimeout 仍共用同一值）。
  * <p>
  * 🚀 为什么用 {@link JdkClientHttpRequestFactory}？
  * - 它底层直接用 JDK 自带的 {@code java.net.http.HttpClient}（Java 11+ 内置），零新增依赖，
@@ -35,7 +36,7 @@ import java.time.Duration;
  * 这样把「大模型不可用」的爆炸半径死死限制在 RAG 链路内，绝不外溢到主站。
  * <p>
  * 💡 八股文关联：
- * - {@code Authorization: Bearer <key>} 是 OpenAI 兼容接口的统一鉴权约定，DashScope 与 DeepSeek 都遵循。
+ * - {@code Authorization: Bearer <key>} 是 OpenAI 兼容接口的统一鉴权约定，中转站聚合的各模型都遵循。
  * - defaultHeader 在 build 时固定下来，之后每次请求自动带上，避免在业务代码里重复拼鉴权头。
  */
 @Configuration
@@ -43,39 +44,40 @@ import java.time.Duration;
 public class RagRestClientConfig {
 
     /**
-     * embedding（文本向量化）客户端：指向阿里云百炼 DashScope 的 OpenAI 兼容接口。
+     * embedding（文本向量化）客户端：指向中转站的 OpenAI 兼容接口。
+     * <p>与 chatRestClient 共用同一个 baseUrl 与同一个 apiKey，仅读超时不同。
      *
-     * @param props RAG 配置，提供 base-url、apiKey 与超时参数
+     * @param props RAG 配置，提供共用的 base-url、apiKey 与超时参数
      * @return 已固定 baseUrl、鉴权头与超时的 RestClient
      */
     @Bean("embeddingRestClient")
     public RestClient embeddingRestClient(RagProperties props) {
-        RagProperties.Embedding embedding = props.getEmbedding();
         // 连接超时设在 JDK HttpClient 上，读超时设在工厂上，二者组合出完整的超时控制
         JdkClientHttpRequestFactory factory = requestFactory(
                 props.getConnectTimeoutMs(), props.getEmbeddingReadTimeoutMs());
         return RestClient.builder()
-                .baseUrl(embedding.getBaseUrl())
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + embedding.getApiKey())
+                .baseUrl(props.getBaseUrl())
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + props.getApiKey())
                 .requestFactory(factory)
                 .build();
     }
 
     /**
-     * chat（答案生成）客户端：指向 DeepSeek 的 OpenAI 兼容接口。
+     * chat（答案生成）客户端：同样指向中转站的 OpenAI 兼容接口。
+     * <p>与 embeddingRestClient 共用同一个 baseUrl 与同一个 apiKey，只是读超时放大到 chatReadTimeoutMs，
+     * 因为 LLM 生成响应慢。
      *
-     * @param props RAG 配置，提供 base-url、apiKey 与超时参数
+     * @param props RAG 配置，提供共用的 base-url、apiKey 与超时参数
      * @return 已固定 baseUrl、鉴权头与超时的 RestClient
      */
     @Bean("chatRestClient")
     public RestClient chatRestClient(RagProperties props) {
-        RagProperties.Chat chat = props.getChat();
-        // chat 的读超时显著大于 embedding，因为 LLM 生成响应慢
+        // chat 的读超时显著大于 embedding，因为 LLM 生成响应慢；baseUrl / apiKey 与 embedding 完全相同
         JdkClientHttpRequestFactory factory = requestFactory(
                 props.getConnectTimeoutMs(), props.getChatReadTimeoutMs());
         return RestClient.builder()
-                .baseUrl(chat.getBaseUrl())
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + chat.getApiKey())
+                .baseUrl(props.getBaseUrl())
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + props.getApiKey())
                 .requestFactory(factory)
                 .build();
     }

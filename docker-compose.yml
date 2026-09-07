@@ -33,8 +33,8 @@ services:            # 要跑的每个容器
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
-      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}   # 阿里云百炼 API key，RAG 问答接口调用 DashScope 用
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}     # DeepSeek API key，RAG 问答生成（chat 补全）调用 DeepSeek 用
+      - LLM_BASE_URL=${LLM_BASE_URL}       # RAG 中转站（OpenAI 兼容网关）地址，embedding 与 chat 共用
+      - LLM_API_KEY=${LLM_API_KEY}         # RAG 中转站统一密钥，embedding 与 chat 共用
     depends_on:
       - mysql
       - redis
