@@ -51,3 +51,9 @@ rag:
   connect-timeout-ms: 3000
   embedding-read-timeout-ms: 15000
   chat-read-timeout-ms: 60000
+
+# 统计看板并行聚合的线程池（取值依据见 DashboardExecutorConfig 类注释）
+dashboard:
+  executor:
+    core-size: 4          # 核心线程数，同时作为最大线程数；上限受 Hikari 连接池（默认 10 条）约束，需给用户接口留余量
+    queue-capacity: 8     # 有界队列；单次请求提交 9 个任务，4 个被线程接走后剩 5 个入队
