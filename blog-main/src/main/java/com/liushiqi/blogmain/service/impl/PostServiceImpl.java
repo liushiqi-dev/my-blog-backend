@@ -71,7 +71,9 @@ public class PostServiceImpl implements PostService {
         if(categoryCount!=req.getCategoryIds().size()){
             throw new BusinessException("分类不存在");
         }
-        postMapper.update(req);
+        if(postMapper.update(req)==0){
+            throw new BusinessException("更新失败");
+        }
         postMapper.deleteCategoriesByPostId(req.getId());
         postMapper.insertCategories(req.getId(),req.getCategoryIds());
         redisUtils.deleteByPattern("posts:*");

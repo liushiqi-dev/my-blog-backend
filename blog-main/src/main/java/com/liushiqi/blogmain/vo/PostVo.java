@@ -23,6 +23,7 @@ public class PostVo {
     private Integer viewCount;
     private Integer likeCount;
     private Boolean liked;
+    private Integer version;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

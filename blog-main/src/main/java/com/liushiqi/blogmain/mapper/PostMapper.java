@@ -30,8 +30,8 @@ public interface PostMapper {
     /**
      * 文章详情
      */
-    @Update("update posts set title=#{title},summary=#{summary},content=#{content},status=#{status} where id=#{id}")
-    void update(PostRequest req);
+    @Update("update posts set title=#{title},summary=#{summary},content=#{content},status=#{status},version=version+1 where id=#{id} and version=#{version}")
+    int update(PostRequest req);
 
     /**
      * 获取文章详情
@@ -40,7 +40,7 @@ public interface PostMapper {
      */
     @Select("select p.id,p.title,p.summary,p.content,users.username authorName," +
             "       group_concat(categories.name) categoryNames" +
-            "       ,p.status,p.create_time,p.update_time,p.view_count,p.like_count" +
+            "       ,p.status,p.create_time,p.update_time,p.view_count,p.like_count,p.version" +
             "            from posts p" +
             "            inner join users on users.id=p.author_id" +
             "            inner join post_categories on p.id = post_categories.post_id" +

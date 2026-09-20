@@ -31,4 +31,6 @@ public class PostRequest {
     private String status;
 
     private String summary;
+
+    private Integer version;
 }

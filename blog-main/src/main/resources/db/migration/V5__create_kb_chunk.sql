@@ -1,0 +1,2 @@
+-- 增加版本字段
+ALTER TABLE posts ADD COLUMN version INT NOT NULL DEFAULT 0;
