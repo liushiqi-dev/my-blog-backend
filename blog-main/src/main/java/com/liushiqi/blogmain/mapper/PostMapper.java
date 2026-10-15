@@ -3,11 +3,7 @@ package com.liushiqi.blogmain.mapper;
 import com.liushiqi.blogmain.dto.request.PostRequest;
 import com.liushiqi.blogmain.vo.PageVo;
 import com.liushiqi.blogmain.vo.PostVo;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -54,7 +50,9 @@ public interface PostMapper {
 
     Integer getTotal(String status);
 
-    List<PageVo> findPage(Integer page, Integer size, String status);
+    List<PageVo> findPage(@Param("offset") Integer offset,
+                          @Param("size") Integer size,
+                          @Param("status") String status);
 
     /**
      * 插入点赞记录（insert ignore：记录已存在时忽略并返回0）

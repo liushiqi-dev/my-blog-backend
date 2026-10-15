@@ -50,6 +50,6 @@
         p.is_deleted=0
         <if test="status!=null and status!=''">and p.status=#{status}</if>
         </where>
-        order by p.create_time desc limit #{page},#{size}
+        order by p.create_time desc limit #{offset},#{size}
     </select>
 </mapper>
