@@ -30,6 +30,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class PostServiceImpl implements PostService {
 
+    // 同一 Service 实例的请求共用这把锁，协调列表缓存失效后的回源。
+    private final Object listCacheLock = new Object();
+
     @Autowired
     private PostMapper postMapper;
 
@@ -148,11 +151,19 @@ public class PostServiceImpl implements PostService {
         if(cache!=null){
             return (PageResult) cache;
         }
-        PageResult result = new PageResult<>(
-                postMapper.findPage(offset,size,status),
-                postMapper.getTotal(status),page,size);
-        redisUtils.setWithRandomTtl(key, result, 30, 5, TimeUnit.MINUTES);
-        return result;
+        synchronized (listCacheLock) {
+            // 等待锁期间，前一个请求可能已经重建缓存，因此获取锁后再检查一次。
+            cache = redisTemplate.opsForValue().get(key);
+            if (cache != null) {
+                return (PageResult) cache;
+            }
+            PageResult result = new PageResult<>(
+                    postMapper.findPage(offset,size,status),
+                    postMapper.getTotal(status),page,size);
+            redisUtils.setWithRandomTtl(key, result, 30, 5, TimeUnit.MINUTES);
+            // 正常返回或抛异常离开同步块，都会自动释放锁。
+            return result;
+        }
     }
 
     @Override
